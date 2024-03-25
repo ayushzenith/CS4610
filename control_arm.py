@@ -19,22 +19,24 @@ def main():
         bot.shutdown()
         sys.exit()
 
-    bot.arm.set_ee_pose_components(x=0.3, y= 0.1, z=0.07, moving_time=2)
+    # a little bit of clearance so it doesn't initially draw
+    RANDOM_UPPER_OFFSET = 0.015
+    bot.arm.set_ee_pose_components(x=0.4, y= 0.1, z=0.0935+RANDOM_UPPER_OFFSET, moving_time=2)
     time.sleep(1)
 
-    center = np.array([0.3, 0.1, 0.07]) 
-    radius = 0.02
+    center = np.array([0.4, 0.1, 0.0935])
+    radius = 0.05
     flag = True
-    num_points = 100 
-    for i in range(num_points):
+    num_points = 200
+    for i in range(num_points+20): # +20 since it doesn't complete the circle at +0
         theta = 2 * np.pi * i / num_points
         x = center[0] + radius * np.cos(theta)
         y = center[1] + radius * np.sin(theta)
         z = center[2]
         if (flag):
-            bot.arm.set_ee_pose_components(x=x, y=y, z=z, moving_time=2)  
+            bot.arm.set_ee_pose_components(x=x, y=y, z=z+RANDOM_UPPER_OFFSET, moving_time=1)
             flag = False
-        bot.arm.set_ee_pose_components(x=x, y=y, z=z, moving_time=0.1)  
+        bot.arm.set_ee_pose_components(x=x, y=y, z=z, moving_time=0.05)
 
     bot.arm.set_ee_pose_components(x=x, y=y, z=z, moving_time=2)  
 
