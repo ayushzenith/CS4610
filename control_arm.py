@@ -19,11 +19,11 @@ def main():
         bot.shutdown()
         sys.exit()
 
-    bot.arm.set_ee_pose_components(x=0.3, z=0.2, moving_time=2)
+    bot.arm.set_ee_pose_components(x=0.3, y= 0.1, z=0.07, moving_time=2)
     time.sleep(1)
 
-    center = np.array([0.3, 0.1, 0.2]) 
-    radius = 0.05
+    center = np.array([0.3, 0.1, 0.07]) 
+    radius = 0.02
     flag = True
     num_points = 100 
     for i in range(num_points):
@@ -32,7 +32,7 @@ def main():
         y = center[1] + radius * np.sin(theta)
         z = center[2]
         if (flag):
-            bot.arm.set_ee_pose_components(x=x, y=y, z=z, moving_time=5)  
+            bot.arm.set_ee_pose_components(x=x, y=y, z=z, moving_time=2)  
             flag = False
         bot.arm.set_ee_pose_components(x=x, y=y, z=z, moving_time=0.1)  
 
