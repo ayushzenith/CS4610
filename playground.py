@@ -1,7 +1,9 @@
 import cv2
 import platform
 import numpy as np
+import time
 
+GREEN = (0, 255, 0)
 
 # Capture video from webcam if you want to use default webcam just pass 0 as argument instead of 1
 if platform.system() == 'Windows':
@@ -24,6 +26,7 @@ def canny_edge_detection(frame):
 
 
 while True:
+    # time.sleep(1)
     # Read a frame from the webcam
     ret, frame = cap.read()
     shapeframe = frame.copy()
@@ -38,19 +41,22 @@ while True:
     contours, _ = cv2.findContours(edges.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     for contour in contours:
         epsilon = 0.04 * cv2.arcLength(contour, True)
-        approx = cv2.approxPolyDP(contour, epsilon, True)
+        approx = cv2.approxPolyDP(contour, epsilon, True) # approx is a numpy array
         vertices = len(approx)
 
         if vertices == 3:
             shape = "Triangle"
         elif vertices == 4:
-            (x, y, w, h) = cv2.boundingRect(approx)
+            rect = cv2.minAreaRect(approx)
+            # cv.boxPoints(rect) to get 4 corners of rect
+            # Angle between the horizontal axis and the first side (i.e. length) in degrees
+            (x, y), (w, h), angle = rect
             ar = w / float(h)
             shape = "square" if ar >= 0.95 and ar <= 1.05 else "rectangle"
         else:
             shape = "Circle"
 
-        cv2.drawContours(shapeframe, [approx], 0, (0, 255, 0), 2)
+        cv2.drawContours(shapeframe, [approx], 0, GREEN, 2)
         cv2.putText(shapeframe, shape, (approx[0][0][0], approx[0][0][1] + 5), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
 
     into_hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
