@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-from random import randrange
 
 '''
 Images:
@@ -10,7 +9,7 @@ Images:
   - board1-crop.jpg       : real image from camera with reflection (cropped to remove tags)
 '''
 
-frame = cv2.imread('images/tilted-board.png')
+frame = cv2.imread('images/board1-crop.jpg')
 shapeframe = frame.copy()
 
 
@@ -26,7 +25,7 @@ def canny_edge_detection(frame):
   edges = cv2.Canny(blurred, 70, 135)
 
   # # Turn into thresholded binary
-  ret, thresh = cv2.threshold(blurred,127,255, 0)
+  ret, thresh = cv2.threshold(blurred,110,255, 0)
 
   # #find and draw contours. RETR_EXTERNAL retrieves only the extreme outer contours
   board, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -38,17 +37,6 @@ def canny_edge_detection(frame):
   cv2.drawContours(shapeframe, contours, -1, (255,0,0), 3)
 
   return edges, contours
-
-
-# Given corners, bottom left -> bottom right -> top right -> top left
-# def boardStats(corners):
-#   width = np.linalg.norm(corners[1] - corners[0])
-#   height = np.linalg.norm(corners[3] - corners[0])
-#   top_left = np.flip(corners[3].T)
-#   top_right = np.flip(corners[2].T)
-#   bottom_left = np.flip(corners[0].T)
-#   bottom_right = np.flip(corners[1].T)
-#   return width, height, [top_left, top_right, bottom_right, bottom_left]
 
 
 def printEdges(x, y, points):
@@ -123,7 +111,7 @@ while True:
 
   if cv2.waitKey(1) & 0xFF == ord('q'):
     # w, h, p = boardStats(board[0])
-    printEdges(x_coords, y_coords, points=[])
+    ##printEdges(x_coords, y_coords, points=[])
     # print('Image top left:', (0, frame.shape[1]))
 
     board, c = findSquares(contours)
