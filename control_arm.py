@@ -81,6 +81,11 @@ def check_winner(board):
     # else, tie ! 
     return None
 
+"""
+(-1,-1) (0,-1) (1,-1)
+(-1,0) (0,0) (1,0)
+(-1,1) (0,1) (1,1)
+"""
 def move(i, j): 
     '''
     Takes in an i and j (representing the row and column of the board) and moves the robot to that position
