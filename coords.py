@@ -55,9 +55,13 @@ def findSquares(contours):
       (x, y, w, h) = cv2.boundingRect(approx)
       rects.append([x, y, w, h])
   # print(rects)
-  return rects
+  return rects # returns board rectangle, ceneter rectangle (use rects[1])
 
 def findGrid(board, center):
+  # board: 4 element array, x, y (of bottom left corner of board), width, height
+  # center: 4 element array, x, y, width, height
+  # returns 3x3 array
+
   x = board[1]
   y = board[0]
   b1 = [x, y, center[1] - x, center[0] - y]
@@ -82,7 +86,9 @@ def findGrid(board, center):
   x += t2[2]
   t3 = [x, y, board[1] + board[3] - x, board[0] + board[2] - y]
 
-  grid = [[t1, t2, t3], [m1, m2, m3], [b1, b2, b3]]
+  grid = [[t1, t2, t3], 
+          [m1, m2, m3], 
+          [b1, b2, b3]]
   return grid
 
 
