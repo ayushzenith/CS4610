@@ -1,9 +1,18 @@
 import sys
 import time
-PEN_OFFSET = 0.055
+import coords
 
 from interbotix_xs_modules.xs_robot.arm import InterbotixManipulatorXS
 import numpy as np
+import cv2
+import platform
+
+
+if platform.system() == 'Windows':
+    cap = cv2.VideoCapture(1, cv2.CAP_DSHOW)
+else:
+    cap = cv2.VideoCapture(1)
+
 
 def best_move(board):
     best_score = float('-inf')
@@ -20,6 +29,7 @@ def best_move(board):
                     move = (i, j)
 
     return move # returns the best move for the robot in the form of (row, col)
+
 
 def minimax(board, depth, is_maximizing):
     winner = check_winner(board)
@@ -52,6 +62,7 @@ def minimax(board, depth, is_maximizing):
                     best_score = min(score, best_score)
         return best_score
 
+
 def check_winner(board):
     # check rows
     for row in board:
@@ -82,7 +93,8 @@ def check_winner(board):
     return None
 
 
-
+def update_board_from_camera(board):
+    assert False
 
 
 '''
@@ -117,7 +129,8 @@ def move(i, j):
         bot.shutdown()
         sys.exit()
 
-    start_x, start_y = middle_x + (dx*i), middle_y (dy*j)
+    # the center of the circle the robot will be drawing
+    start_x, start_y = middle_x + (dx*i), middle_y + (dy*j)
 
     # a little bit of clearance so it doesn't initially draw
     RANDOM_UPPER_OFFSET = 0.015
@@ -157,6 +170,17 @@ def main():
     while True:
         user_input = input("Enter command: ")
         if user_input.lower() == 'm':
+            ret, frame = cap.read()
+            if not ret:
+                print('Image not captured')
+                break
+            
+            # Perform Canny edge detection on the frame
+            edges, contours = coords.anny_edge_detection(frame)
+
+            b, center_square_vals = coords.findSquares(contours)
+            grid = coords.findGrid(b, center_square_vals)
+
             # board = update_board_from_camera(board) TODO: !! THIS WILL BE THE FUNCTION THAT UPDATES THE BOARD BASED ON THE CV
             move_coords = best_move(board) # Get the best move for the robot
             if move_coords is not None:
