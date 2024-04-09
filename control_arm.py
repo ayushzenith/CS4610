@@ -81,6 +81,14 @@ def check_winner(board):
     # else, tie ! 
     return None
 
+
+
+
+
+'''
+Takes in an i and j (representing the row and column of the board) and converts it to the robot's reference frame
+'''
+
 """
 (-1,-1) (0,-1) (1,-1)
 (-1,0) (0,0) (1,0)
@@ -91,7 +99,12 @@ def move(i, j):
     Takes in an i and j (representing the row and column of the board) and moves the robot to that position
     TODO convert i and j into robot's reference frame
     '''
-    x_to_play, y_to_play = convert_coords_to_robot(i, j) # TODO implement this conversion function... 
+    dx, dy = 2, 2 ## TODO fill this with something
+    i = i - 1 # convert from 0 indexed 2d arr to center indexed 2d arr
+    j = j - 1
+    middle_x, middle_y = 0.4, 0.1  ## TODO fill this with something 
+    
+    ## multiply dx and dy (in reference from the center square) and multiply by some constant 
 
     bot = InterbotixManipulatorXS(        
         robot_model='wx250',
@@ -104,12 +117,14 @@ def move(i, j):
         bot.shutdown()
         sys.exit()
 
+    start_x, start_y = middle_x + (dx*i), middle_y (dy*j)
+
     # a little bit of clearance so it doesn't initially draw
     RANDOM_UPPER_OFFSET = 0.015
-    bot.arm.set_ee_pose_components(x=x_to_play, y= y_to_play, z=.0915+RANDOM_UPPER_OFFSET, moving_time=1)
+    bot.arm.set_ee_pose_components(x=start_x, y=start_y, z=.0915+RANDOM_UPPER_OFFSET, moving_time=1)
     time.sleep(1)
 
-    center = np.array([x_to_play, y_to_play, 0.0915])
+    center = np.array([start_x, start_y, 0.0915])
     # radius = 0.05
     radius = 0.025
     flag = True
@@ -147,7 +162,7 @@ def main():
             if move_coords is not None:
                 board[move_coords[0]][move_coords[1]] = 'O' # change our internal representation
                 print(board)
-                # move(move_coords[0], move_coords[1]) # move the robot there
+                move(move_coords[0], move_coords[1]) # move the robot there
             else:
                 print("No valid moves left for the robot.") 
         elif user_input.lower() == 'q':
