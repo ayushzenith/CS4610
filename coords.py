@@ -82,8 +82,18 @@ def findGrid(board, center):
   x += t2[2]
   t3 = [x, y, board[1] + board[3] - x, board[0] + board[2] - y]
 
-  grid = [[t1, t2, t3], [m1, m2, m3], [b1, b2, b3]]
-  return grid
+  grid = [[t1, t2, t3],
+          [m1, m2, m3],
+          [b1, b2, b3]]
+  corners = [
+    [[], [], []],
+    [[], [], []],
+    [[], [], []],
+  ]
+  for i, r in enumerate(grid):
+    for j, sq in enumerate(r):
+      corners[i][j] = [(sq[0], sq[1]), (sq[0] + sq[2], sq[1] + sq[3])]
+  return grid, corners
 
 
 def drawGrid(frame, grid):
@@ -97,7 +107,7 @@ while True:
   edges, contours = canny_edge_detection(frame)
 
   b, c = findSquares(contours)
-  grid = findGrid(b, c)
+  grid, corners = findGrid(b, c)
   drawGrid(shapeframe, grid)
 
   # Display the original frame and the edge-detected frame
@@ -116,7 +126,8 @@ while True:
 
     board, c = findSquares(contours)
     print(board, c)
-    grid = findGrid(board, c)
+    grid, corners = findGrid(board, c)
     print(grid)
+    print(corners)
     cv2.destroyAllWindows()
     break
