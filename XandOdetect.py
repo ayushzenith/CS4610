@@ -4,7 +4,6 @@ import numpy as np
 # Open the video file
 cap = cv2.VideoCapture('images/testVid3.mp4')
 
-
 def detect_board(frame):
     img = frame
     # convert to grayscale
@@ -59,7 +58,10 @@ def canny_edge_detection(frame):
 
     return blurred, edges
 
-
+def get_approx_poly(contour):
+    epsilon = 0.04 * cv2.arcLength(contour, True)
+    poly_contour = cv2.approxPolyDP(contour, epsilon, True)
+    return poly_contour
 
 
 while(cap.isOpened()):
@@ -91,8 +93,20 @@ while(cap.isOpened()):
             approx = cv2.approxPolyDP(contour, epsilon, True)
             vertices = len(approx)
 
-            if vertices >= 8:
-                shape = "X"
+            contour_area = cv2.contourArea(contour)
+            poly = get_approx_poly(contour)
+            convex = cv2.isContourConvex(poly)
+
+            convex_hull = cv2.convexHull(contour)
+            convex_hull_area = cv2.contourArea(convex_hull)
+            try:
+                solidity = contour_area / convex_hull_area
+            except ZeroDivisionError:
+                solidity = 0
+
+            if vertices >= 8 and vertices <= 10 and solidity < 0.5 and convex_hull_area > 1000 and convex_hull_area < 10000:
+                #shape = "X" + str(vertices) + " " + str(convex_hull_area) + " " + str(solidity)
+                shape = "X" + str(convex)
             else:
                 shape = ""
 
@@ -107,10 +121,10 @@ while(cap.isOpened()):
                 cv2.circle(frame, (i[0], i[1]), i[2], (0, 255, 0), 2)
                 # Draw the center of the circle
                 cv2.circle(frame, (i[0], i[1]), 2, (0, 0, 255), 3)
+                cv2.putText(frame, "O", (i[0], i[1] + 5), cv2.FONT_HERSHEY_SIMPLEX, 1,(0, 0, 0), 2)
 
         # Display the frame with the drawn circles
         cv2.imshow('detected circles', frame)
-        cv2.imshow('gray', gray)
 
         # Break the loop if 'q' is pressed
         if cv2.waitKey(1) & 0xFF == ord('q'):
