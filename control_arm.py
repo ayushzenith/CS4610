@@ -100,21 +100,22 @@ def update_board_from_camera(board):
 '''
 Takes in an i and j (representing the row and column of the board) and converts it to the robot's reference frame
 '''
-
-"""
-(-1,-1) (0,-1) (1,-1)
-(-1,0) (0,0) (1,0)
-(-1,1) (0,1) (1,1)
-"""
-def move(i, j): 
+def move(i, j, center_sqr_bottom_left_x, center_sqr_bottom_left_y, center_sqr_bottom_left_width, center_sqr_bottom_left_height): 
     '''
     Takes in an i and j (representing the row and column of the board) and moves the robot to that position
     TODO convert i and j into robot's reference frame
     '''
-    dx, dy = 2, 2 ## TODO fill this with something
+    dx, dy = center_sqr_bottom_left_width, center_sqr_bottom_left_height
+
+
+    """
+    (-1,-1) (0,-1) (1,-1)
+    (-1,0) (0,0) (1,0)
+    (-1,1) (0,1) (1,1)
+    """
     i = i - 1 # convert from 0 indexed 2d arr to center indexed 2d arr
     j = j - 1
-    middle_x, middle_y = 0.4, 0.1  ## TODO fill this with something 
+    middle_x, middle_y = center_sqr_bottom_left_x, center_sqr_bottom_left_y
     
     ## multiply dx and dy (in reference from the center square) and multiply by some constant 
 
@@ -186,7 +187,15 @@ def main():
             if move_coords is not None:
                 board[move_coords[0]][move_coords[1]] = 'O' # change our internal representation
                 print(board)
-                move(move_coords[0], move_coords[1]) # move the robot there
+
+                center_sqr_bottom_left_x, center_sqr_bottom_left_y, center_sqr_bottom_left_width, center_sqr_bottom_left_height = 0,0,0,0 # TODO: hardcoded test values
+
+                move(move_coords[0], 
+                     move_coords[1],
+                     center_sqr_bottom_left_x,
+                     center_sqr_bottom_left_y,
+                     center_sqr_bottom_left_width,
+                     center_sqr_bottom_left_height) # move the robot there
             else:
                 print("No valid moves left for the robot.") 
         elif user_input.lower() == 'q':
