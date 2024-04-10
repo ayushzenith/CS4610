@@ -160,6 +160,39 @@ def move(i, j, center_sqr_bottom_left_x, center_sqr_bottom_left_y, center_sqr_bo
     bot.arm.go_to_sleep_pose()
     bot.shutdown()
 
+def pixel_space_to_robot_frame():
+    TOP_LEFT_BOARD_CORNER_PIXEL_LOC = 0, 0
+    PIXELS_TO_METERS = 0
+
+    """
+    image wise, it will probably be something like
+
+    (0,0)
+    _____________
+    |           |
+    |           |
+    |___________|
+       (robot)
+
+
+    robot frame is like
+          x
+          ^
+          |
+    y <---
+
+    from the top down
+    """
+    ROBOT_CALIBRATION_PT_1 = 0, 0
+    ROBOT_CALIBRATION_PT_PIXELS_1 = 0, 0
+
+    ROBOT_CALIBRATION_PT_2 = 0, 0
+    ROBOT_CALIBRATION_PT_PIXELS_2 = 0, 0
+    
+
+
+    pass
+
 
 def main():
 
