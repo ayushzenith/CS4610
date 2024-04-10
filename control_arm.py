@@ -160,12 +160,24 @@ def move(i, j, center_sqr_bottom_left_x, center_sqr_bottom_left_y, center_sqr_bo
     bot.arm.go_to_sleep_pose()
     bot.shutdown()
 
-def pixel_space_to_robot_frame():
-    TOP_LEFT_BOARD_CORNER_PIXEL_LOC = 0, 0
-    PIXELS_TO_METERS = 0
 
+# returns a lambda
+def fit_linear_line(pt1_tuple, pt2_tuple):
+    x0, y0 = pt1_tuple
+    x1, y1 = pt2_tuple
+
+    slope = (y1 - y0) / (x1 - x0)
     """
-    image wise, it will probably be something like
+    point slope form
+    y - y0 = m(x - x0)
+    y = m(x - x0) + y0
+    """
+    return lambda x: slope * (x - x0) + y0
+
+
+def pixel_space_to_robot_frame(pixel_x, pixel_y):
+    """
+    image wise (in pixels), it will probably be something like
 
     (0,0)
     _____________
@@ -175,7 +187,7 @@ def pixel_space_to_robot_frame():
        (robot)
 
 
-    robot frame is like
+    robot frame (in meters) is like
           x
           ^
           |
@@ -183,15 +195,30 @@ def pixel_space_to_robot_frame():
 
     from the top down
     """
-    ROBOT_CALIBRATION_PT_1 = 0, 0
-    ROBOT_CALIBRATION_PT_PIXELS_1 = 0, 0
+    """
+    pixel_x, pixel_y robot_x, robot_y
+    (100, 150)       (10, 15)
+    (200, 250)       (5, 10)
 
-    ROBOT_CALIBRATION_PT_2 = 0, 0
-    ROBOT_CALIBRATION_PT_PIXELS_2 = 0, 0
+    pixel_x corresponds to robot_y,
+    pixel_y corresponds to robot_x
     
+    aka, find best fit between (150, 10) (250, 5) to get robot_x
+    best fit between (100, 15) (200, 10) to get robot_y
+    """
+    PT_1_PIXEL_X, PT_1_PIXEL_Y = 0, 0
+    PT_1_ROBOT_X, PT_1_ROBOT_Y = 0, 0
 
+    PT_2_PIXEL_X, PT_2_PIXEL_Y = 0, 0
+    PT_2_ROBOT_X, PT_2_ROBOT_Y = 0, 0
 
-    pass
+    robot_x_calibration_funct = fit_linear_line((PT_1_PIXEL_Y, PT_1_ROBOT_X),
+                                                (PT_2_PIXEL_Y, PT_2_ROBOT_X))
+
+    robot_y_calibration_funct = fit_linear_line((PT_1_PIXEL_X, PT_1_ROBOT_Y),
+                                                (PT_2_PIXEL_X, PT_2_ROBOT_Y))
+
+    return robot_x_calibration_funct(pixel_y), robot_y_calibration_funct(pixel_x)
 
 
 def main():
