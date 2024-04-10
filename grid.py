@@ -1,7 +1,9 @@
 import cv2
 import numpy as np
 
-cap = cv2.VideoCapture('./images/testVid3.mp4')
+# cap = cv2.VideoCapture('./images/testVid3.mp4')
+
+cap = cv2.VideoCapture(0)
 
 def canny_edge_detection(frame, shapeframe):
   # Convert the frame to grayscale for edge detection
@@ -85,7 +87,7 @@ def findCenterRectangle(contours):
       rects.append([x, y, w, h])
 
   rects.sort(key=lambda r: r[2] * r[3])
-
+  print (len(rects))
   return rects[-2]
 
 
@@ -202,7 +204,7 @@ while True:
 
   frame = detect_board(frame)
   shapeframe = frame.copy()
-
+  cv2.imshow('frame', frame)
   # Perform Canny edge detection on the frame
   edges, contours = canny_edge_detection(frame, shapeframe)
 

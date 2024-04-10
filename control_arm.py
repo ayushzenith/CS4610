@@ -207,11 +207,11 @@ def pixel_space_to_robot_frame(pixel_x, pixel_y):
     best fit between (100, 15) (200, 10) to get robot_y
     """
     # REPLACE THESE VALUES FOR CALIBRATION
-    PT_1_PIXEL_X, PT_1_PIXEL_Y = 0, 0
-    PT_1_ROBOT_X, PT_1_ROBOT_Y = 0, 0
+    PT_1_PIXEL_X, PT_1_PIXEL_Y = 285, 85
+    PT_1_ROBOT_X, PT_1_ROBOT_Y = 0.5, 0
 
-    PT_2_PIXEL_X, PT_2_PIXEL_Y = 0, 0
-    PT_2_ROBOT_X, PT_2_ROBOT_Y = 0, 0
+    PT_2_PIXEL_X, PT_2_PIXEL_Y = 131, 256
+    PT_2_ROBOT_X, PT_2_ROBOT_Y = 0.3, 0.2 
 
     robot_x_calibration_funct = fit_linear_line((PT_1_PIXEL_Y, PT_1_ROBOT_X),
                                                 (PT_2_PIXEL_Y, PT_2_ROBOT_X))
@@ -221,6 +221,7 @@ def pixel_space_to_robot_frame(pixel_x, pixel_y):
 
     return robot_x_calibration_funct(pixel_y), robot_y_calibration_funct(pixel_x)
 
+# 400, 235
 
 def main():
 
@@ -230,51 +231,70 @@ def main():
 
 
     while True:
-        user_input = input("Enter command: ")
-        if user_input.lower() == 'm':
-        #     ret, frame = cap.read()
-        #     if not ret:
-        #         print('Image not captured')
-        #         break
-            
-        #     # Perform Canny edge detection on the frame
-        #     edges, contours = coords.anny_edge_detection(frame)
+        x, y = pixel_space_to_robot_frame(400, 235)
 
-        #     b, center_square_vals = coords.findSquares(contours)
-        #     grid = coords.findGrid(b, center_square_vals)
-
-            # board = update_board_from_camera(board) TODO: !! THIS WILL BE THE FUNCTION THAT UPDATES THE BOARD BASED ON THE CV
-            move_coords = best_move(board) # Get the best move for the robot
-            if move_coords is not None:
-                board[move_coords[0]][move_coords[1]] = 'O' # change our internal representation
-                print(board)
-
-                ## bottom left = 260
-                ## bottom right = 260
-                # w, h = 100
-                ## pixel to cm = 100 : 10 
-
-                center_sqr_bottom_left_x, center_sqr_bottom_left_y, center_sqr_bottom_left_width, center_sqr_bottom_left_height = 0.5, 0.3, .1, .1 # TODO: hardcoded test values
-
-                move(move_coords[0], 
-                     move_coords[1],
-                     center_sqr_bottom_left_x,
-                     center_sqr_bottom_left_y,
-                     center_sqr_bottom_left_width,
-                     center_sqr_bottom_left_height) # move the robot there
-            else:
-                print("No valid moves left for the robot.") 
-        elif user_input.lower() == 'q':
+        bot = InterbotixManipulatorXS(        
+        robot_model='wx250',
+        group_name='arm',
+        gripper_name='gripper'
+        )
+        
+        if (bot.arm.group_info.num_joints < 5):
+            bot.core.get_logger().fatal('This demo requires the robot to have at least 5 joints!')
             bot.shutdown()
             sys.exit()
 
 
+        bot.arm.set_ee_pose_components(x=x, y=y, z=.0915, moving_time=1)
+        time.sleep(1)
+
+        bot.arm.go_to_home_pose()
+        bot.arm.go_to_sleep_pose()
+        bot.shutdown()
+
+
+
+        # user_input = input("Enter command: ")
+        # if user_input.lower() == 'm':
+        # #     ret, frame = cap.read()
+        # #     if not ret:
+        # #         print('Image not captured')
+        # #         break
+            
+        # #     # Perform Canny edge detection on the frame
+        # #     edges, contours = coords.anny_edge_detection(frame)
+
+        # #     b, center_square_vals = coords.findSquares(contours)
+        # #     grid = coords.findGrid(b, center_square_vals)
+
+        #     # board = update_board_from_camera(board) TODO: !! THIS WILL BE THE FUNCTION THAT UPDATES THE BOARD BASED ON THE CV
+        #     move_coords = best_move(board) # Get the best move for the robot
+        #     if move_coords is not None:
+        #         board[move_coords[0]][move_coords[1]] = 'O' # change our internal representation
+        #         print(board)
+
+        #         ## bottom left = 260
+        #         ## bottom right = 260
+        #         # w, h = 100
+        #         ## pixel to cm = 100 : 10 
+
+        #         center_sqr_bottom_left_x, center_sqr_bottom_left_y, center_sqr_bottom_left_width, center_sqr_bottom_left_height = 0.5, 0.3, .1, .1 # TODO: hardcoded test values
+
+        #         move(move_coords[0], 
+        #              move_coords[1],
+        #              center_sqr_bottom_left_x,
+        #              center_sqr_bottom_left_y,
+        #              center_sqr_bottom_left_width,
+        #              center_sqr_bottom_left_height) # move the robot there
+        #     else:
+        #         print("No valid moves left for the robot.") 
+        # elif user_input.lower() == 'q':
+        #     bot.shutdown()
+        #     sys.exit()
+
+
 if __name__ == '__main__':
     main()
-
-
-
-
 
 
 
