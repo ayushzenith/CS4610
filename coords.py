@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-
+import platform
 '''
 Images:
   - full-clean-board.png  : default stock image of board (no tilt)
@@ -9,9 +9,13 @@ Images:
   - board1-crop.jpg       : real image from camera with reflection (cropped to remove tags)
 '''
 
-frame = cv2.imread('images/board1-crop.jpg')
-shapeframe = frame.copy()
+# frame = cv2.imread('images/board1-crop.jpg')
+# shapeframe = frame.copy()
 
+if platform.system() == 'Windows':
+    cap = cv2.VideoCapture(1, cv2.CAP_DSHOW)
+else:
+    cap = cv2.VideoCapture(0)
 
 
 
@@ -108,20 +112,22 @@ def drawGrid(frame, grid):
 
 while True:
   # Perform Canny edge detection on the frame
+  ret, frame = cap.read()
+  shapeframe = frame.copy()
   edges, contours = canny_edge_detection(frame)
 
-  b, c = findSquares(contours)
-  grid, corners = findGrid(b, c)
-  drawGrid(shapeframe, grid)
+  # b, c = findSquares(contours)
+  # grid, corners = findGrid(b, c)
+  # drawGrid(shapeframe, grid)
 
-  # Display the original frame and the edge-detected frame
-  cv2.imshow("Original", frame)
-  cv2.imshow("Edges", edges)
-  cv2.imshow("Grid", shapeframe)
+  # # Display the original frame and the edge-detected frame
+  # cv2.imshow("Original", frame)
+  # cv2.imshow("Edges", edges)
+  # cv2.imshow("Grid", shapeframe)
 
-  indices = np.where(edges != [0])
-  y_coords = indices[1]
-  x_coords = indices[0]
+  # indices = np.where(edges != [0])
+  # y_coords = indices[1]
+  # x_coords = indices[0]
 
   if cv2.waitKey(1) & 0xFF == ord('q'):
     # w, h, p = boardStats(board[0])
@@ -135,3 +141,4 @@ while True:
     print(corners)
     cv2.destroyAllWindows()
     break
+cap.release()
