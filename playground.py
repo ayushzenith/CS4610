@@ -9,7 +9,7 @@ GREEN = (0, 255, 0)
 if platform.system() == 'Windows':
     cap = cv2.VideoCapture(1, cv2.CAP_DSHOW)
 else:
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(0)
 
 
 def canny_edge_detection(frame):

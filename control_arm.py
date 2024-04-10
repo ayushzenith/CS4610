@@ -1,6 +1,6 @@
 import sys
 import time
-import coords
+# import coords
 
 from interbotix_xs_modules.xs_robot.arm import InterbotixManipulatorXS
 import numpy as np
@@ -8,10 +8,10 @@ import cv2
 import platform
 
 
-if platform.system() == 'Windows':
-    cap = cv2.VideoCapture(1, cv2.CAP_DSHOW)
-else:
-    cap = cv2.VideoCapture(1)
+# if platform.system() == 'Windows':
+#     cap = cv2.VideoCapture(1, cv2.CAP_DSHOW)
+# else:
+#     cap = cv2.VideoCapture(1)
 
 
 def best_move(board):
@@ -46,7 +46,7 @@ def minimax(board, depth, is_maximizing):
             for j in range(3):
                 if board[i][j] == '':
                     board[i][j] = 'O'
-                    move(i, j)
+                    # move(i, j)
                     score = minimax(board, depth + 1, False)
                     board[i][j] = ''
                     best_score = max(score, best_score)
@@ -171,16 +171,16 @@ def main():
     while True:
         user_input = input("Enter command: ")
         if user_input.lower() == 'm':
-            ret, frame = cap.read()
-            if not ret:
-                print('Image not captured')
-                break
+        #     ret, frame = cap.read()
+        #     if not ret:
+        #         print('Image not captured')
+        #         break
             
-            # Perform Canny edge detection on the frame
-            edges, contours = coords.anny_edge_detection(frame)
+        #     # Perform Canny edge detection on the frame
+        #     edges, contours = coords.anny_edge_detection(frame)
 
-            b, center_square_vals = coords.findSquares(contours)
-            grid = coords.findGrid(b, center_square_vals)
+        #     b, center_square_vals = coords.findSquares(contours)
+        #     grid = coords.findGrid(b, center_square_vals)
 
             # board = update_board_from_camera(board) TODO: !! THIS WILL BE THE FUNCTION THAT UPDATES THE BOARD BASED ON THE CV
             move_coords = best_move(board) # Get the best move for the robot
@@ -188,7 +188,12 @@ def main():
                 board[move_coords[0]][move_coords[1]] = 'O' # change our internal representation
                 print(board)
 
-                center_sqr_bottom_left_x, center_sqr_bottom_left_y, center_sqr_bottom_left_width, center_sqr_bottom_left_height = 0,0,0,0 # TODO: hardcoded test values
+                ## bottom left = 260
+                ## bottom right = 260
+                # w, h = 100
+                ## pixel to cm = 100 : 10 
+
+                center_sqr_bottom_left_x, center_sqr_bottom_left_y, center_sqr_bottom_left_width, center_sqr_bottom_left_height = 0.5, 0.3, .1, .1 # TODO: hardcoded test values
 
                 move(move_coords[0], 
                      move_coords[1],
