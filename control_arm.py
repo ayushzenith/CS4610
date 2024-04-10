@@ -206,6 +206,7 @@ def pixel_space_to_robot_frame(pixel_x, pixel_y):
     aka, find best fit between (150, 10) (250, 5) to get robot_x
     best fit between (100, 15) (200, 10) to get robot_y
     """
+    # REPLACE THESE VALUES FOR CALIBRATION
     PT_1_PIXEL_X, PT_1_PIXEL_Y = 0, 0
     PT_1_ROBOT_X, PT_1_ROBOT_Y = 0, 0
 
