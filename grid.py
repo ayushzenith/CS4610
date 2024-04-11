@@ -1,9 +1,9 @@
 import cv2
 import numpy as np
 
-# cap = cv2.VideoCapture('./images/testVid3.mp4')
+cap = cv2.VideoCapture('./images/testVid3.mp4')
 
-cap = cv2.VideoCapture(0)
+# cap = cv2.VideoCapture(0)
 
 def canny_edge_detection(frame, shapeframe):
   # Convert the frame to grayscale for edge detection
@@ -130,6 +130,13 @@ def findGridCoordinate(x, y, grid):
 
 
 def readBoard(gameState):
+  '''
+  given a 3x3 array of gamestate (chars '', 'O', 'X'), updates it with the current state of the board from camera
+  (chars '', 'O', 'X')
+  0 = '' = blank
+  1 = 'X' = triangle
+  2 = 'O' circle
+  '''
   # Shape detection on canny edge
   # Convert the frame to grayscale
   gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -166,7 +173,7 @@ def readBoard(gameState):
     cv2.putText(frame, shape, (approx[0][0][0], approx[0][0][1] + 5), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
     if len(approx) > 4:
       pos = findGridCoordinate((approx[0][0][0] + approx[4][0][0]) // 2, (approx[0][0][1] + approx[4][0][1]) // 2, grid)
-      gameState[pos[0]][pos[1]] = 1
+      gameState[pos[0]][pos[1]] = 'X'
       # cv2.putText(frame, shape, (approx[4][0][0], approx[4][0][1] + 5), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
 
   # If circles are detected
@@ -179,7 +186,7 @@ def readBoard(gameState):
       cv2.circle(frame, (i[0], i[1]), 2, (0, 0, 255), 3)
       pos = findGridCoordinate(i[0], i[1], grid)
       cv2.putText(frame, f"O {pos}", (i[0], i[1] + 5), cv2.FONT_HERSHEY_SIMPLEX, 1,(0, 0, 0), 2)
-      gameState[pos[0]][pos[1]] = 2
+      gameState[pos[0]][pos[1]] = 'O'
 
   # Display the frame with the drawn circles
   cv2.imshow('detected circles', frame)
@@ -197,6 +204,7 @@ board = [0, 0, frame.shape[1], frame.shape[0]]
 print('BOARD:', board)
 print('CENTER:', center)
 grid = [board, center]
+print (center)
 
 
 while True:
@@ -214,16 +222,16 @@ while True:
   cv2.rectangle(shapeframe, [0, 0], [frame.shape[1], frame.shape[0]], color=(0,0,255), thickness=3)
   cv2.circle(shapeframe, [center[0], center[1]], 5, color=(0,255,0), thickness=5)
 
-
   # Display the original frame and the edge-detected frame
   cv2.imshow("Original", frame)
   cv2.imshow("Edges", edges)
   cv2.imshow("Grid", shapeframe)
 
   if cv2.waitKey(33) == ord('a'):
-    gameState = [[0, 0, 0],
-                 [0, 0, 0],
-                 [0, 0, 0]]
+    ## modified this to chars, to work with the control_arm impl! 
+    gameState = [['', '', ''],
+                 ['', '', ''],
+                 ['', '', '']]
     readBoard(gameState)
     print(gameState)
 
