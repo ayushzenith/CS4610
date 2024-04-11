@@ -92,13 +92,10 @@ def check_winner(board):
 '''
 Takes in an i and j (representing the row and column of the board) and converts it to the robot's reference frame
 '''
-def move(i, j, center_sqr_bottom_left_x, center_sqr_bottom_left_y, center_sqr_bottom_left_width, center_sqr_bottom_left_height): 
+def move(i, j, x, y, dx, dy): 
     '''
     Takes in an i and j (representing the row and column of the board) and moves the robot to that position
     '''
-    dx, dy = center_sqr_bottom_left_width, center_sqr_bottom_left_height
-
-
     """
     (-1,-1) (0,-1) (1,-1)
     (-1,0) (0,0) (1,0)
@@ -106,9 +103,6 @@ def move(i, j, center_sqr_bottom_left_x, center_sqr_bottom_left_y, center_sqr_bo
     """
     i = i - 1 # convert from 0 indexed 2d arr to center indexed 2d arr
     j = j - 1
-    middle_x, middle_y = center_sqr_bottom_left_x + (center_sqr_bottom_left_width / 2 ), center_sqr_bottom_left_y +  (center_sqr_bottom_left_height / 2 )
-
-    ## multiply dx and dy (in reference from the center square) and multiply by some constant 
 
     bot = InterbotixManipulatorXS(        
         robot_model='wx250',
@@ -122,8 +116,12 @@ def move(i, j, center_sqr_bottom_left_x, center_sqr_bottom_left_y, center_sqr_bo
         sys.exit()
 
     # the center of the circle the robot will be drawing
-    start_x, start_y = middle_x + (dx*i), middle_y + (dy*j)
+    # IN ROBOTS FRAME: equivalent to center square bottom left (x, y) + (dx/2, dy/2) to get the middle of the center
+    # then displaced by dx*i, dy*j to get the center of the square to play in 
 
+    start_x, start_y = (x + dx/2) + (dx*i), (y + dy/2) + (dy*j)
+    print(start_x, start_y)
+    ## multiply dx and dy (in reference from the center square) and multiply by some constant 
     # a little bit of clearance so it doesn't initially draw
     RANDOM_UPPER_OFFSET = 0.015
     bot.arm.set_ee_pose_components(x=start_x, y=start_y, z=.0915+RANDOM_UPPER_OFFSET, moving_time=1)
@@ -226,7 +224,8 @@ def main():
     # if platform.system() == 'Windows':
     #     cap = cv2.VideoCapture(1, cv2.CAP_DSHOW)
     # else:
-    cap = cv2.VideoCapture(0)
+    # cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture('./images/testVid3.mp4')
     ret, frame = cap.read()
     frame = grid.detect_board(frame)
     shapeframe = frame.copy()
@@ -235,27 +234,31 @@ def main():
     ## width, height = (dx, dy) in pixels = (center[2], center[3])
     center = grid.findCenterRectangle(contours) 
     center_sqr_bottom_left_x, center_sqr_bottom_left_y, center_sqr_bottom_left_width, center_sqr_bottom_left_height = center
+    dx, dy = pixel_space_to_robot_frame(center_sqr_bottom_left_width, center_sqr_bottom_left_height)
+    center_x, center_y = pixel_space_to_robot_frame(center_sqr_bottom_left_x, center_sqr_bottom_left_y)
+    ## CONVERSION FROM PIXEL SPACE TO ROBOTS FRAME WILL JUST HAPPEN ONCE IN THE BEGINGIN 
     print(center)
+    print (center_x, center_y, dx, dy)
 
     while True:
-        bot = InterbotixManipulatorXS(        
-        robot_model='wx250',
-        group_name='arm',
-        gripper_name='gripper'
-        )
+        # bot = InterbotixManipulatorXS(        
+        # robot_model='wx250',
+        # group_name='arm',
+        # gripper_name='gripper'
+        # )
         
-        if (bot.arm.group_info.num_joints < 5):
-            bot.core.get_logger().fatal('This demo requires the robot to have at least 5 joints!')
-            bot.shutdown()
-            sys.exit()
+        # if (bot.arm.group_info.num_joints < 5):
+        #     bot.core.get_logger().fatal('This demo requires the robot to have at least 5 joints!')
+        #     bot.shutdown()
+        #     sys.exit()
 
 
-        bot.arm.set_ee_pose_components(x=x, y=y, z=.0915, moving_time=1)
-        time.sleep(1)
+        # bot.arm.set_ee_pose_components(x=x, y=y, z=.0915, moving_time=1)
+        # time.sleep(1)
 
-        bot.arm.go_to_home_pose()
-        bot.arm.go_to_sleep_pose()
-        bot.shutdown()
+        # bot.arm.go_to_home_pose()
+        # bot.arm.go_to_sleep_pose()
+        # bot.shutdown()
 
         user_input = input("Enter command: ")
         if user_input.lower() == 'm':
@@ -274,10 +277,10 @@ def main():
             
                 move(move_coords[0],  # this is the row (0, 1, 2)
                      move_coords[1],  # this is the col (0, 1, 2)
-                     center_sqr_bottom_left_x,
-                     center_sqr_bottom_left_y,
-                     center_sqr_bottom_left_width,
-                     center_sqr_bottom_left_height) # move the robot there
+                     center_x, # this is the bottom left x position of the center square IN ROBOTS FRAME
+                     center_y,  # this is the bottom left y position of the center square IN ROBOTS FRAME
+                     dx,  # this is the displacement the robot needs to move in the x direction to get to the next square IN ROBOTS FRAME 
+                     dy)  # this is the displacement the robot needs to move in the y direction to get to the next square IN ROBOTS FRAME
             else:
                 print("No valid moves left for the robot.") 
         elif user_input.lower() == 'q':
