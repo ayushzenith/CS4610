@@ -193,6 +193,7 @@ def pixel_space_to_robot_frame(pixel_x, pixel_y):
           |
     y <---
 
+    (sourced from https://docs.trossenrobotics.com/interbotix_xsarms_docs/python_ros_interface.html)
     from the top down
     """
     """
@@ -202,7 +203,7 @@ def pixel_space_to_robot_frame(pixel_x, pixel_y):
 
     pixel_x corresponds to robot_y,
     pixel_y corresponds to robot_x
-    
+
     aka, find best fit between (150, 10) (250, 5) to get robot_x
     best fit between (100, 15) (200, 10) to get robot_y
     """
