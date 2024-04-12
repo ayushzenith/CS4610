@@ -255,7 +255,12 @@ def main():
     # center = grid.findCenterRectangle(contours) 
 
     center_sqr_bottom_left_x, center_sqr_bottom_left_y, center_sqr_bottom_left_width, center_sqr_bottom_left_height = center
-    dx, dy = pixel_space_to_robot_frame(center_sqr_bottom_left_width, center_sqr_bottom_left_height)
+
+    fucked_x, fucked_y = pixel_space_to_robot_frame(
+        center_sqr_bottom_left_x + center_sqr_bottom_left_width,
+        center_sqr_bottom_left_y + center_sqr_bottom_left_height)
+
+    dx, dy = (fucked_x - dx), (fucked_y - dy)
     center_x, center_y = pixel_space_to_robot_frame(center_sqr_bottom_left_x, center_sqr_bottom_left_y)
     ## CONVERSION FROM PIXEL SPACE TO ROBOTS FRAME WILL JUST HAPPEN ONCE IN THE BEGINGIN 
     print(center)
