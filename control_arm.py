@@ -99,9 +99,9 @@ def move(i, j, x, y, dx, dy):
     Takes in an i and j (representing the row and column of the board) and moves the robot to that position
     '''
     """
-    (-1,-1) (0,-1) (1,-1)
-    (-1,0) (0,0) (1,0)
-    (-1,1) (0,1) (1,1)
+    (-1,-1) (-1,0) (-1,1)
+    (0,-1) (0,0) (0,1)
+    (1,-1) (1,0) (1,1)
     """
     i = i - 1 # convert from 0 indexed 2d arr to center indexed 2d arr
     j = j - 1
