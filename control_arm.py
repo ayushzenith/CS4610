@@ -206,11 +206,11 @@ def pixel_space_to_robot_frame(pixel_x, pixel_y):
     best fit between (100, 15) (200, 10) to get robot_y
     """
     # REPLACE THESE VALUES FOR CALIBRATION
-    PT_1_PIXEL_X, PT_1_PIXEL_Y = 442, 171
-    PT_1_ROBOT_X, PT_1_ROBOT_Y = 0.25, 0.1
+    PT_1_PIXEL_X, PT_1_PIXEL_Y = 265, 126
+    PT_1_ROBOT_X, PT_1_ROBOT_Y = .5, 0
 
-    PT_2_PIXEL_X, PT_2_PIXEL_Y = 141, 362
-    PT_2_ROBOT_X, PT_2_ROBOT_Y = 0.4, -0.1
+    PT_2_PIXEL_X, PT_2_PIXEL_Y = 88, 313
+    PT_2_ROBOT_X, PT_2_ROBOT_Y = .3, .2
 
     robot_x_calibration_funct = fit_linear_line((PT_1_PIXEL_Y, PT_1_ROBOT_X),
                                                 (PT_2_PIXEL_Y, PT_2_ROBOT_X))
@@ -260,8 +260,9 @@ def main():
         center_sqr_bottom_left_x + center_sqr_bottom_left_width,
         center_sqr_bottom_left_y + center_sqr_bottom_left_height)
 
-    dx, dy = (fucked_x - dx), (fucked_y - dy)
     center_x, center_y = pixel_space_to_robot_frame(center_sqr_bottom_left_x, center_sqr_bottom_left_y)
+
+    dx, dy = (fucked_x - center_x), (fucked_y - center_y)
     ## CONVERSION FROM PIXEL SPACE TO ROBOTS FRAME WILL JUST HAPPEN ONCE IN THE BEGINGIN 
     print(f"Robot coordinates: {center_x}, {center_y}, {dx}, {dy}")
     
@@ -275,11 +276,16 @@ def main():
         edges, contours = g.canny_edge_detection(frame, shapeframe)
         if cv2.waitKey(1) & 0xFF == ord('m'):    
             gameboard = g.readBoard(frame, edges, contours, grid, gameboard) # THIS WILL BE THE FUNCTION THAT UPDATES THE BOARD BASED ON THE CV
-            print(gameboard)
+            print ("after robot move")
+            for row in gameboard:
+                print(row)
+
             move_coords = best_move(gameboard) # Get the best move for the robot
             if move_coords is not None:
                 gameboard[move_coords[0]][move_coords[1]] = 'O' # change our internal representation
-                print(gameboard)
+                print ("after robot move")
+                for row in gameboard:
+                    print(row)
 
                 ## bottom left = 260
                 ## bottom right = 260
@@ -287,12 +293,12 @@ def main():
                 ## pixel to cm = 100 : 10 
 
             
-                # move(move_coords[0],  # this is the row (0, 1, 2)
-                #      move_coords[1],  # this is the col (0, 1, 2)
-                #      center_x, # this is the bottom left x position of the center square IN ROBOTS FRAME
-                #      center_y,  # this is the bottom left y position of the center square IN ROBOTS FRAME
-                #      dx,  # this is the displacement the robot needs to move in the x direction to get to the next square IN ROBOTS FRAME 
-                #      dy)  # this is the displacement the robot needs to move in the y direction to get to the next square IN ROBOTS FRAME
+                move(move_coords[0],  # this is the row (0, 1, 2)
+                     move_coords[1],  # this is the col (0, 1, 2)
+                     center_x, # this is the bottom left x position of the center square IN ROBOTS FRAME
+                     center_y,  # this is the bottom left y position of the center square IN ROBOTS FRAME
+                     dx,  # this is the displacement the robot needs to move in the x direction to get to the next square IN ROBOTS FRAME 
+                     dy)  # this is the displacement the robot needs to move in the y direction to get to the next square IN ROBOTS FRAME
             else:
                 print("No valid moves left for the robot.") 
         

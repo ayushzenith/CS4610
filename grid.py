@@ -165,18 +165,17 @@ def readBoard(frame, edges, contours, grid, gameState):
     if vertices >= 8 and vertices <= 10 and solidity < 0.5 and convex_hull_area > 1000 and convex_hull_area < 10000:
       #shape = "X" + str(vertices) + " " + str(convex_hull_area) + " " + str(solidity)
       shape = "X"
-      print(approx)
+      if len(approx) > 4:
+        pos = findGridCoordinate((approx[0][0][0] + approx[4][0][0]) // 2, (approx[0][0][1] + approx[4][0][1]) // 2, grid)
+        gameState[pos[0]][pos[1]] = 'X'
+        cv2.putText(frame, shape, (approx[4][0][0], approx[4][0][1] + 5), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
     else:
       shape = ""
 
     cv2.drawContours(frame, [approx], 0, (0, 255, 0), 2)
     cv2.putText(frame, shape, (approx[0][0][0], approx[0][0][1] + 5), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
     # print(approx)
-    if len(approx) > 4:
-      pos = findGridCoordinate((approx[0][0][0] + approx[4][0][0]) // 2, (approx[0][0][1] + approx[4][0][1]) // 2, grid)
-      gameState[pos[0]][pos[1]] = 'X'
-      cv2.putText(frame, shape, (approx[4][0][0], approx[4][0][1] + 5), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
-
+  
   # If circles are detected
   if circles is not None:
     circles = np.uint16(np.around(circles))
