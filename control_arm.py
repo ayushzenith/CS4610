@@ -257,13 +257,13 @@ def main():
 
     center_sqr_top_left_x, center_sqr_top_left_y, center_sqr_top_left_width, center_sqr_top_left_height = center
 
-    fucked_x, fucked_y = pixel_space_to_robot_frame(
+    bottom_right_x, bottom_right_y = pixel_space_to_robot_frame(
         center_sqr_top_left_x + center_sqr_top_left_width,
         center_sqr_top_left_y + center_sqr_top_left_height)
 
     center_x, center_y = pixel_space_to_robot_frame(center_sqr_top_left_x, center_sqr_top_left_y)
 
-    dx, dy = (fucked_x - center_x), (fucked_y - center_y)
+    dx, dy = (center_x - bottom_right_x), (center_y - bottom_right_y)
     ## CONVERSION FROM PIXEL SPACE TO ROBOTS FRAME WILL JUST HAPPEN ONCE IN THE BEGINGIN 
     print(f"Robot coordinates: {center_x}, {center_y}, {dx}, {dy}")
     
