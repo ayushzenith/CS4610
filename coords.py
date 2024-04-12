@@ -2,6 +2,8 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import platform
+import grid
+
 '''
 Images:
   - full-clean-board.png  : default stock image of board (no tilt)

@@ -1,20 +1,17 @@
 import sys
 import time
-# import coords
-
 from interbotix_xs_modules.xs_robot.arm import InterbotixManipulatorXS
 import numpy as np
 import cv2
 import platform
+import grid as g
 
-
-# if platform.system() == 'Windows':
-#     cap = cv2.VideoCapture(1, cv2.CAP_DSHOW)
-# else:
-#     cap = cv2.VideoCapture(1)
-
+cap = cv2.VideoCapture(0)
 
 def best_move(board):
+    if board is None:
+        return None  # or handle this case appropriately
+
     best_score = float('-inf')
     move = None
     for i in range(3):
@@ -93,20 +90,14 @@ def check_winner(board):
     return None
 
 
-def update_board_from_camera(board):
-    assert False
-
 
 '''
 Takes in an i and j (representing the row and column of the board) and converts it to the robot's reference frame
 '''
-def move(i, j, center_sqr_bottom_left_x, center_sqr_bottom_left_y, center_sqr_bottom_left_width, center_sqr_bottom_left_height): 
+def move(i, j, x, y, dx, dy): 
     '''
     Takes in an i and j (representing the row and column of the board) and moves the robot to that position
     '''
-    dx, dy = center_sqr_bottom_left_width, center_sqr_bottom_left_height
-
-
     """
     (-1,-1) (0,-1) (1,-1)
     (-1,0) (0,0) (1,0)
@@ -114,9 +105,6 @@ def move(i, j, center_sqr_bottom_left_x, center_sqr_bottom_left_y, center_sqr_bo
     """
     i = i - 1 # convert from 0 indexed 2d arr to center indexed 2d arr
     j = j - 1
-    middle_x, middle_y = center_sqr_bottom_left_x, center_sqr_bottom_left_y
-    
-    ## multiply dx and dy (in reference from the center square) and multiply by some constant 
 
     bot = InterbotixManipulatorXS(        
         robot_model='wx250',
@@ -130,8 +118,12 @@ def move(i, j, center_sqr_bottom_left_x, center_sqr_bottom_left_y, center_sqr_bo
         sys.exit()
 
     # the center of the circle the robot will be drawing
-    start_x, start_y = middle_x + (dx*i), middle_y + (dy*j)
+    # IN ROBOTS FRAME: equivalent to center square bottom left (x, y) + (dx/2, dy/2) to get the middle of the center
+    # then displaced by dx*i, dy*j to get the center of the square to play in 
 
+    start_x, start_y = (x + dx/4) + (dx*i), (y + dy/4) + (dy*j)
+    print(start_x, start_y)
+    ## multiply dx and dy (in reference from the center square) and multiply by some constant 
     # a little bit of clearance so it doesn't initially draw
     RANDOM_UPPER_OFFSET = 0.015
     bot.arm.set_ee_pose_components(x=start_x, y=start_y, z=.0915+RANDOM_UPPER_OFFSET, moving_time=1)
@@ -207,11 +199,11 @@ def pixel_space_to_robot_frame(pixel_x, pixel_y):
     best fit between (100, 15) (200, 10) to get robot_y
     """
     # REPLACE THESE VALUES FOR CALIBRATION
-    PT_1_PIXEL_X, PT_1_PIXEL_Y = 285, 85
-    PT_1_ROBOT_X, PT_1_ROBOT_Y = 0.5, 0
+    PT_1_PIXEL_X, PT_1_PIXEL_Y = 442, 171
+    PT_1_ROBOT_X, PT_1_ROBOT_Y = 0.25, 0.1
 
-    PT_2_PIXEL_X, PT_2_PIXEL_Y = 131, 256
-    PT_2_ROBOT_X, PT_2_ROBOT_Y = 0.3, 0.2 
+    PT_2_PIXEL_X, PT_2_PIXEL_Y = 141, 362
+    PT_2_ROBOT_X, PT_2_ROBOT_Y = 0.4, -0.1
 
     robot_x_calibration_funct = fit_linear_line((PT_1_PIXEL_Y, PT_1_ROBOT_X),
                                                 (PT_2_PIXEL_Y, PT_2_ROBOT_X))
@@ -223,122 +215,85 @@ def pixel_space_to_robot_frame(pixel_x, pixel_y):
 
 # 400, 235
 
+import grid 
+
 def main():
 
-    board = [['', '', ''],
+    gameboard = [['', '', ''],
              ['', '', ''],
              ['', '', '']]
 
 
+    
+    # if platform.system() == 'Windows':
+    #     cap = cv2.VideoCapture(1, cv2.CAP_DSHOW)
+    # else:
+    # cap = cv2.VideoCapture('./images/testVid3.mp4')
+    ret, frame = cap.read()
+    if not ret:
+        print("Failed to open camera.")
+        sys.exit()
+    frame = g.detect_board(frame)
+    shapeframe = frame.copy()
+    edges, contours = g.canny_edge_detection(frame, shapeframe)
+    center = g.findCenterRectangle(contours)
+    board = [0, 0, frame.shape[1], frame.shape[0]]
+    # print('BOARD:', board)
+    # print('CENTER:', center)
+    grid = [board, center]
+    print (center)
+
+    ## bottom left point of center square = (x, y) in pixels = (center[0], center[1])
+    ## width, height = (dx, dy) in pixels = (center[2], center[3])
+    # center = grid.findCenterRectangle(contours) 
+
+    center_sqr_bottom_left_x, center_sqr_bottom_left_y, center_sqr_bottom_left_width, center_sqr_bottom_left_height = center
+    dx, dy = pixel_space_to_robot_frame(center_sqr_bottom_left_width, center_sqr_bottom_left_height)
+    center_x, center_y = pixel_space_to_robot_frame(center_sqr_bottom_left_x, center_sqr_bottom_left_y)
+    ## CONVERSION FROM PIXEL SPACE TO ROBOTS FRAME WILL JUST HAPPEN ONCE IN THE BEGINGIN 
+    print(center)
+    print (center_x, center_y, dx, dy)
+    
     while True:
-        x, y = pixel_space_to_robot_frame(400, 235)
-
-        bot = InterbotixManipulatorXS(        
-        robot_model='wx250',
-        group_name='arm',
-        gripper_name='gripper'
-        )
         
-        if (bot.arm.group_info.num_joints < 5):
-            bot.core.get_logger().fatal('This demo requires the robot to have at least 5 joints!')
-            bot.shutdown()
-            sys.exit()
+        ret, frame = cap.read()
+        frame = g.detect_board(frame)
+        shapeframe = frame.copy()
+        cv2.imshow('Tic Tac Toe! Enter m to move', frame)
+        # Perform Canny edge detection on the frame
+        edges, contours = g.canny_edge_detection(frame, shapeframe)
+        if cv2.waitKey(1) & 0xFF == ord('m'):    
+            gameboard = g.readBoard(frame, edges, contours, grid, gameboard) # THIS WILL BE THE FUNCTION THAT UPDATES THE BOARD BASED ON THE CV
+            print(gameboard)
+            move_coords = best_move(gameboard) # Get the best move for the robot
+            if move_coords is not None:
+                gameboard[move_coords[0]][move_coords[1]] = 'O' # change our internal representation
+                print(gameboard)
 
+                ## bottom left = 260
+                ## bottom right = 260
+                # w, h = 100
+                ## pixel to cm = 100 : 10 
 
-        bot.arm.set_ee_pose_components(x=x, y=y, z=.0915, moving_time=1)
-        time.sleep(1)
-
-        bot.arm.go_to_home_pose()
-        bot.arm.go_to_sleep_pose()
-        bot.shutdown()
-
-
-
-        # user_input = input("Enter command: ")
-        # if user_input.lower() == 'm':
-        # #     ret, frame = cap.read()
-        # #     if not ret:
-        # #         print('Image not captured')
-        # #         break
             
-        # #     # Perform Canny edge detection on the frame
-        # #     edges, contours = coords.anny_edge_detection(frame)
+                # move(move_coords[0],  # this is the row (0, 1, 2)
+                #      move_coords[1],  # this is the col (0, 1, 2)
+                #      center_x, # this is the bottom left x position of the center square IN ROBOTS FRAME
+                #      center_y,  # this is the bottom left y position of the center square IN ROBOTS FRAME
+                #      dx,  # this is the displacement the robot needs to move in the x direction to get to the next square IN ROBOTS FRAME 
+                #      dy)  # this is the displacement the robot needs to move in the y direction to get to the next square IN ROBOTS FRAME
+            else:
+                print("No valid moves left for the robot.") 
+        
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            cv2.destroyAllWindows()
+            break
 
-        # #     b, center_square_vals = coords.findSquares(contours)
-        # #     grid = coords.findGrid(b, center_square_vals)
+            
 
-        #     # board = update_board_from_camera(board) TODO: !! THIS WILL BE THE FUNCTION THAT UPDATES THE BOARD BASED ON THE CV
-        #     move_coords = best_move(board) # Get the best move for the robot
-        #     if move_coords is not None:
-        #         board[move_coords[0]][move_coords[1]] = 'O' # change our internal representation
-        #         print(board)
-
-        #         ## bottom left = 260
-        #         ## bottom right = 260
-        #         # w, h = 100
-        #         ## pixel to cm = 100 : 10 
-
-        #         center_sqr_bottom_left_x, center_sqr_bottom_left_y, center_sqr_bottom_left_width, center_sqr_bottom_left_height = 0.5, 0.3, .1, .1 # TODO: hardcoded test values
-
-        #         move(move_coords[0], 
-        #              move_coords[1],
-        #              center_sqr_bottom_left_x,
-        #              center_sqr_bottom_left_y,
-        #              center_sqr_bottom_left_width,
-        #              center_sqr_bottom_left_height) # move the robot there
-        #     else:
-        #         print("No valid moves left for the robot.") 
-        # elif user_input.lower() == 'q':
-        #     bot.shutdown()
-        #     sys.exit()
-
+        
 
 if __name__ == '__main__':
     main()
 
 
-
-
-
-
-
-
-
-
-    # bot = InterbotixManipulatorXS(        
-    #     robot_model='wx250',
-    #     group_name='arm',
-    #     gripper_name='gripper'
-    #     )
-        
-    # if (bot.arm.group_info.num_joints < 5):
-    #     bot.core.get_logger().fatal('This demo requires the robot to have at least 5 joints!')
-    #     bot.shutdown()
-    #     sys.exit()
-
-    # # a little bit of clearance so it doesn't initially draw
-    # RANDOM_UPPER_OFFSET = 0.015
-    # bot.arm.set_ee_pose_components(x=0.4, y= 0.1, z=.0915+RANDOM_UPPER_OFFSET, moving_time=1)
-    # time.sleep(1)
-
-    # center = np.array([0.4, 0.1, 0.0915])
-    # # radius = 0.05
-    # radius = 0.025
-    # flag = True
-    # num_points = 200
-    # for i in range(num_points+20): # +20 since it doesn't complete the circle at +0
-    #     theta = 2 * np.pi * i / num_points
-    #     x = center[0] + radius * np.cos(theta)
-    #     y = center[1] + radius * np.sin(theta)
-    #     z = center[2]
-    #     if (flag):
-    #         bot.arm.set_ee_pose_components(x=x, y=y, z=z+RANDOM_UPPER_OFFSET, moving_time=1)
-    #         flag = False
-    #     bot.arm.set_ee_pose_components(x=x, y=y, z=z, moving_time=0.05)
-
-    # bot.arm.set_ee_pose_components(x=x, y=y, z=z+0.01, moving_time=2)  
-    
-    
-    # bot.arm.go_to_home_pose()
-    # bot.arm.go_to_sleep_pose()
-    # bot.shutdown()
