@@ -117,11 +117,18 @@ def move(i, j, x, y, dx, dy):
         bot.shutdown()
         sys.exit()
 
+    """
+    robot frame (in meters) is like
+          x
+          ^
+          |
+    y <---
+    """
     # the center of the circle the robot will be drawing
     # IN ROBOTS FRAME: equivalent to center square bottom left (x, y) + (dx/2, dy/2) to get the middle of the center
     # then displaced by dx*i, dy*j to get the center of the square to play in 
 
-    start_x, start_y = (x + dx/4) + (dx*i), (y + dy/4) + (dy*j)
+    start_x, start_y = (x + dx/4) + (dx*-i), (y + dy/4) + (dy*-j)
     print(start_x, start_y)
     ## multiply dx and dy (in reference from the center square) and multiply by some constant 
     # a little bit of clearance so it doesn't initially draw
