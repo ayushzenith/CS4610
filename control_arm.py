@@ -129,7 +129,7 @@ def move(i, j, x, y, dx, dy):
     # IN ROBOTS FRAME: equivalent to center square bottom left (x, y) + (dx/2, dy/2) to get the middle of the center
     # then displaced by dx*i, dy*j to get the center of the square to play in 
 
-    start_x, start_y = (x + dx/4) + (dx*-i), (y + dy/4) + (dy*-j)
+    start_x, start_y = (x - dx) + (dx*-i), (y - dy) + (dy*-j)
     print(f"start_x={start_x}, start_y={start_y}")
     ## multiply dx and dy (in reference from the center square) and multiply by some constant 
     # a little bit of clearance so it doesn't initially draw
@@ -137,11 +137,11 @@ def move(i, j, x, y, dx, dy):
     bot.arm.set_ee_pose_components(x=start_x, y=start_y, z=.0915+RANDOM_UPPER_OFFSET, moving_time=1)
     time.sleep(1)
 
-    center = np.array([start_x, start_y, 0.07])
+    center = np.array([start_x, start_y, 0.08])
     # radius = 0.05
     radius = 0.025
     flag = True
-    num_points = 200
+    num_points = 300
     for i in range(num_points+20): # +20 since it doesn't complete the circle at +0
         theta = 2 * np.pi * i / num_points
         x = center[0] + radius * np.cos(theta)
@@ -207,10 +207,10 @@ def pixel_space_to_robot_frame(pixel_x, pixel_y):
     best fit between (100, 15) (200, 10) to get robot_y
     """
     # REPLACE THESE VALUES FOR CALIBRATION
-    PT_1_PIXEL_X, PT_1_PIXEL_Y = 344, 152 
+    PT_1_PIXEL_X, PT_1_PIXEL_Y = 317, 169
     PT_1_ROBOT_X, PT_1_ROBOT_Y = .5, 0
 
-    PT_2_PIXEL_X, PT_2_PIXEL_Y = 155, 309
+    PT_2_PIXEL_X, PT_2_PIXEL_Y = 144, 349
     PT_2_ROBOT_X, PT_2_ROBOT_Y = .3, .2
 
     robot_x_calibration_funct = fit_linear_line((PT_1_PIXEL_Y, PT_1_ROBOT_X),
@@ -277,7 +277,7 @@ def main():
         edges, contours = g.canny_edge_detection(frame, shapeframe)
         if cv2.waitKey(1) & 0xFF == ord('m'):    
             gameboard = g.readBoard(frame, edges, contours, grid, gameboard) # THIS WILL BE THE FUNCTION THAT UPDATES THE BOARD BASED ON THE CV
-            print ("after robot move")
+            print ("befor robot move")
             for row in gameboard:
                 print(row)
 

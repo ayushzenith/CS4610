@@ -1,0 +1,127 @@
+TERMINAL OUTPUT
+
+cs3650@CS3650-VM:~/CS4610$ python3 control_arm.py
+18
+Raw center coordinates from img: [230, 219, 98, 92]
+Robot coordinates: 0.4444444444444444, 0.10057803468208093, 0.10222222222222221, 0.11329479768786127
+Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
+after robot move
+['', '', '']
+['', '', '']
+['', '', '']
+after robot move
+['O', '', '']
+['', '', '']
+['', '', '']
+Move called with i=0, j=0, x=0.4444444444444444, y=0.10057803468208093, dx=0.10222222222222221, dy=0.11329479768786127
+[INFO] [1712942739.997384795] [robot_manipulation]: 
+	Robot Name: wx250
+	Robot Model: wx250
+[INFO] [1712942739.997680130] [robot_manipulation]: Initialized InterbotixRobotXSCore!
+[INFO] [1712942740.001914666] [robot_manipulation]: 
+	Arm Group Name: arm
+	Moving Time: 2.00 seconds
+	Acceleration Time: 0.30 seconds
+	Drive Mode: Time-Based-Profile
+[INFO] [1712942740.002142783] [robot_manipulation]: Initialized InterbotixArmXSInterface!
+[INFO] [1712942740.505382582] [robot_manipulation]: 
+	Gripper Name: gripper
+	Gripper Pressure: 50.0%
+[INFO] [1712942740.505672541] [robot_manipulation]: Initialized InterbotixGripperXSInterface!
+start_x=0.4444444444444444, start_y=0.10057803468208093
+after robot move
+['O', '', '']
+['', 'O', '']
+['', '', '']
+after robot move
+['O', 'O', '']
+['', 'O', '']
+['', '', '']
+Move called with i=0, j=1, x=0.4444444444444444, y=0.10057803468208093, dx=0.10222222222222221, dy=0.11329479768786127
+[INFO] [1712942792.220621665] [robot_manipulation]: 
+	Robot Name: wx250
+	Robot Model: wx250
+[INFO] [1712942792.220863742] [robot_manipulation]: Initialized InterbotixRobotXSCore!
+[INFO] [1712942792.223628354] [robot_manipulation]: 
+	Arm Group Name: arm
+	Moving Time: 2.00 seconds
+	Acceleration Time: 0.30 seconds
+	Drive Mode: Time-Based-Profile
+[INFO] [1712942792.223845303] [robot_manipulation]: Initialized InterbotixArmXSInterface!
+[INFO] [1712942792.726044696] [robot_manipulation]: 
+	Gripper Name: gripper
+	Gripper Pressure: 50.0%
+[INFO] [1712942792.726260228] [robot_manipulation]: Initialized InterbotixGripperXSInterface!
+start_x=0.4444444444444444, start_y=-0.01271676300578034
+mafter robot move
+['O', 'O', 'X']
+['', 'O', '']
+['', '', '']
+after robot move
+['O', 'O', 'X']
+['O', 'O', '']
+['', '', '']
+Move called with i=1, j=0, x=0.4444444444444444, y=0.10057803468208093, dx=0.10222222222222221, dy=0.11329479768786127
+[INFO] [1712942831.386146932] [robot_manipulation]: 
+	Robot Name: wx250
+	Robot Model: wx250
+[INFO] [1712942831.386346253] [robot_manipulation]: Initialized InterbotixRobotXSCore!
+[INFO] [1712942831.389276471] [robot_manipulation]: 
+	Arm Group Name: arm
+	Moving Time: 2.00 seconds
+	Acceleration Time: 0.30 seconds
+	Drive Mode: Time-Based-Profile
+[INFO] [1712942831.389496920] [robot_manipulation]: Initialized InterbotixArmXSInterface!
+[INFO] [1712942831.891686950] [robot_manipulation]: 
+	Gripper Name: gripper
+	Gripper Pressure: 50.0%
+[INFO] [1712942831.891915525] [robot_manipulation]: Initialized InterbotixGripperXSInterface!
+start_x=0.3422222222222222, start_y=0.10057803468208093
+after robot move
+['O', 'O', 'X']
+['O', 'O', '']
+['X', '', '']
+after robot move
+['O', 'O', 'X']
+['O', 'O', 'O']
+['X', '', '']
+Move called with i=1, j=2, x=0.4444444444444444, y=0.10057803468208093, dx=0.10222222222222221, dy=0.11329479768786127
+[INFO] [1712942888.274735920] [robot_manipulation]: 
+	Robot Name: wx250
+	Robot Model: wx250
+[INFO] [1712942888.274977872] [robot_manipulation]: Initialized InterbotixRobotXSCore!
+[INFO] [1712942888.286523755] [robot_manipulation]: 
+	Arm Group Name: arm
+	Moving Time: 2.00 seconds
+	Acceleration Time: 0.30 seconds
+	Drive Mode: Time-Based-Profile
+[INFO] [1712942888.286719659] [robot_manipulation]: Initialized InterbotixArmXSInterface!
+[INFO] [1712942888.790598837] [robot_manipulation]: 
+	Gripper Name: gripper
+	Gripper Pressure: 50.0%
+[INFO] [1712942888.790840580] [robot_manipulation]: Initialized InterbotixGripperXSInterface!
+start_x=0.3422222222222222, start_y=-0.1260115606936416
+after robot move
+['O', 'O', 'X']
+['O', 'O', 'O']
+['X', '', 'X']
+after robot move
+['O', 'O', 'X']
+['O', 'O', 'O']
+['X', 'O', 'X']
+Move called with i=2, j=1, x=0.4444444444444444, y=0.10057803468208093, dx=0.10222222222222221, dy=0.11329479768786127
+[INFO] [1712942987.668642445] [robot_manipulation]: 
+	Robot Name: wx250
+	Robot Model: wx250
+[INFO] [1712942987.668900939] [robot_manipulation]: Initialized InterbotixRobotXSCore!
+[INFO] [1712942987.673590938] [robot_manipulation]: 
+	Arm Group Name: arm
+	Moving Time: 2.00 seconds
+	Acceleration Time: 0.30 seconds
+	Drive Mode: Time-Based-Profile
+[INFO] [1712942987.673767338] [robot_manipulation]: Initialized InterbotixArmXSInterface!
+[INFO] [1712942988.176180362] [robot_manipulation]: 
+	Gripper Name: gripper
+	Gripper Pressure: 50.0%
+[INFO] [1712942988.176486530] [robot_manipulation]: Initialized InterbotixGripperXSInterface!
+start_x=0.24, start_y=-0.01271676300578034
