@@ -207,10 +207,10 @@ def pixel_space_to_robot_frame(pixel_x, pixel_y):
     best fit between (100, 15) (200, 10) to get robot_y
     """
     # REPLACE THESE VALUES FOR CALIBRATION
-    PT_1_PIXEL_X, PT_1_PIXEL_Y = 265, 126
+    PT_1_PIXEL_X, PT_1_PIXEL_Y = 344, 152 
     PT_1_ROBOT_X, PT_1_ROBOT_Y = .5, 0
 
-    PT_2_PIXEL_X, PT_2_PIXEL_Y = 88, 313
+    PT_2_PIXEL_X, PT_2_PIXEL_Y = 155, 309
     PT_2_ROBOT_X, PT_2_ROBOT_Y = .3, .2
 
     robot_x_calibration_funct = fit_linear_line((PT_1_PIXEL_Y, PT_1_ROBOT_X),
