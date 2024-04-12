@@ -1,15 +1,17 @@
 import sys
 import time
-import coords
-
 from interbotix_xs_modules.xs_robot.arm import InterbotixManipulatorXS
 import numpy as np
 import cv2
 import platform
+import grid as g
 
-
+cap = cv2.VideoCapture(0)
 
 def best_move(board):
+    if board is None:
+        return None  # or handle this case appropriately
+
     best_score = float('-inf')
     move = None
     for i in range(3):
@@ -119,7 +121,7 @@ def move(i, j, x, y, dx, dy):
     # IN ROBOTS FRAME: equivalent to center square bottom left (x, y) + (dx/2, dy/2) to get the middle of the center
     # then displaced by dx*i, dy*j to get the center of the square to play in 
 
-    start_x, start_y = (x + dx/2) + (dx*i), (y + dy/2) + (dy*j)
+    start_x, start_y = (x + dx/4) + (dx*i), (y + dy/4) + (dy*j)
     print(start_x, start_y)
     ## multiply dx and dy (in reference from the center square) and multiply by some constant 
     # a little bit of clearance so it doesn't initially draw
@@ -197,11 +199,11 @@ def pixel_space_to_robot_frame(pixel_x, pixel_y):
     best fit between (100, 15) (200, 10) to get robot_y
     """
     # REPLACE THESE VALUES FOR CALIBRATION
-    PT_1_PIXEL_X, PT_1_PIXEL_Y = 285, 85
-    PT_1_ROBOT_X, PT_1_ROBOT_Y = 0.5, 0
+    PT_1_PIXEL_X, PT_1_PIXEL_Y = 442, 171
+    PT_1_ROBOT_X, PT_1_ROBOT_Y = 0.25, 0.1
 
-    PT_2_PIXEL_X, PT_2_PIXEL_Y = 131, 256
-    PT_2_ROBOT_X, PT_2_ROBOT_Y = 0.3, 0.2 
+    PT_2_PIXEL_X, PT_2_PIXEL_Y = 141, 362
+    PT_2_ROBOT_X, PT_2_ROBOT_Y = 0.4, -0.1
 
     robot_x_calibration_funct = fit_linear_line((PT_1_PIXEL_Y, PT_1_ROBOT_X),
                                                 (PT_2_PIXEL_Y, PT_2_ROBOT_X))
@@ -213,9 +215,11 @@ def pixel_space_to_robot_frame(pixel_x, pixel_y):
 
 # 400, 235
 
+import grid 
+
 def main():
 
-    board = [['', '', ''],
+    gameboard = [['', '', ''],
              ['', '', ''],
              ['', '', '']]
 
@@ -224,50 +228,47 @@ def main():
     # if platform.system() == 'Windows':
     #     cap = cv2.VideoCapture(1, cv2.CAP_DSHOW)
     # else:
-    # cap = cv2.VideoCapture(0)
-    cap = cv2.VideoCapture('./images/testVid3.mp4')
+    # cap = cv2.VideoCapture('./images/testVid3.mp4')
     ret, frame = cap.read()
-    frame = grid.detect_board(frame)
+    if not ret:
+        print("Failed to open camera.")
+        sys.exit()
+    frame = g.detect_board(frame)
     shapeframe = frame.copy()
-    edges, contours = grid.canny_edge_detection(frame, shapeframe)
+    edges, contours = g.canny_edge_detection(frame, shapeframe)
+    center = g.findCenterRectangle(contours)
+    board = [0, 0, frame.shape[1], frame.shape[0]]
+    # print('BOARD:', board)
+    # print('CENTER:', center)
+    grid = [board, center]
+    print (center)
+
     ## bottom left point of center square = (x, y) in pixels = (center[0], center[1])
     ## width, height = (dx, dy) in pixels = (center[2], center[3])
-    center = grid.findCenterRectangle(contours) 
+    # center = grid.findCenterRectangle(contours) 
+
     center_sqr_bottom_left_x, center_sqr_bottom_left_y, center_sqr_bottom_left_width, center_sqr_bottom_left_height = center
     dx, dy = pixel_space_to_robot_frame(center_sqr_bottom_left_width, center_sqr_bottom_left_height)
     center_x, center_y = pixel_space_to_robot_frame(center_sqr_bottom_left_x, center_sqr_bottom_left_y)
     ## CONVERSION FROM PIXEL SPACE TO ROBOTS FRAME WILL JUST HAPPEN ONCE IN THE BEGINGIN 
     print(center)
     print (center_x, center_y, dx, dy)
-
-    while True:
-        # bot = InterbotixManipulatorXS(        
-        # robot_model='wx250',
-        # group_name='arm',
-        # gripper_name='gripper'
-        # )
-        
-        # if (bot.arm.group_info.num_joints < 5):
-        #     bot.core.get_logger().fatal('This demo requires the robot to have at least 5 joints!')
-        #     bot.shutdown()
-        #     sys.exit()
-
-
-        # bot.arm.set_ee_pose_components(x=x, y=y, z=.0915, moving_time=1)
-        # time.sleep(1)
-
-        # bot.arm.go_to_home_pose()
-        # bot.arm.go_to_sleep_pose()
-        # bot.shutdown()
-
-        user_input = input("Enter command: ")
-        if user_input.lower() == 'm':
     
-            board = grid.readBoard(board) # THIS WILL BE THE FUNCTION THAT UPDATES THE BOARD BASED ON THE CV
-            move_coords = best_move(board) # Get the best move for the robot
+    while True:
+        
+        ret, frame = cap.read()
+        frame = g.detect_board(frame)
+        shapeframe = frame.copy()
+        cv2.imshow('Tic Tac Toe! Enter m to move', frame)
+        # Perform Canny edge detection on the frame
+        edges, contours = g.canny_edge_detection(frame, shapeframe)
+        if cv2.waitKey(1) & 0xFF == ord('m'):    
+            gameboard = g.readBoard(frame, edges, contours, grid, gameboard) # THIS WILL BE THE FUNCTION THAT UPDATES THE BOARD BASED ON THE CV
+            print(gameboard)
+            move_coords = best_move(gameboard) # Get the best move for the robot
             if move_coords is not None:
-                board[move_coords[0]][move_coords[1]] = 'O' # change our internal representation
-                print(board)
+                gameboard[move_coords[0]][move_coords[1]] = 'O' # change our internal representation
+                print(gameboard)
 
                 ## bottom left = 260
                 ## bottom right = 260
@@ -275,18 +276,22 @@ def main():
                 ## pixel to cm = 100 : 10 
 
             
-                move(move_coords[0],  # this is the row (0, 1, 2)
-                     move_coords[1],  # this is the col (0, 1, 2)
-                     center_x, # this is the bottom left x position of the center square IN ROBOTS FRAME
-                     center_y,  # this is the bottom left y position of the center square IN ROBOTS FRAME
-                     dx,  # this is the displacement the robot needs to move in the x direction to get to the next square IN ROBOTS FRAME 
-                     dy)  # this is the displacement the robot needs to move in the y direction to get to the next square IN ROBOTS FRAME
+                # move(move_coords[0],  # this is the row (0, 1, 2)
+                #      move_coords[1],  # this is the col (0, 1, 2)
+                #      center_x, # this is the bottom left x position of the center square IN ROBOTS FRAME
+                #      center_y,  # this is the bottom left y position of the center square IN ROBOTS FRAME
+                #      dx,  # this is the displacement the robot needs to move in the x direction to get to the next square IN ROBOTS FRAME 
+                #      dy)  # this is the displacement the robot needs to move in the y direction to get to the next square IN ROBOTS FRAME
             else:
                 print("No valid moves left for the robot.") 
-        elif user_input.lower() == 'q':
-            bot.shutdown()
-            sys.exit()
+        
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            cv2.destroyAllWindows()
+            break
 
+            
+
+        
 
 if __name__ == '__main__':
     main()
