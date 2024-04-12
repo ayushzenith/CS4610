@@ -103,7 +103,6 @@ Takes in an i and j (representing the row and column of the board) and converts 
 def move(i, j, center_sqr_bottom_left_x, center_sqr_bottom_left_y, center_sqr_bottom_left_width, center_sqr_bottom_left_height): 
     '''
     Takes in an i and j (representing the row and column of the board) and moves the robot to that position
-    TODO convert i and j into robot's reference frame
     '''
     dx, dy = center_sqr_bottom_left_width, center_sqr_bottom_left_height
 
