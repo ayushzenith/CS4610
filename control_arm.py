@@ -248,7 +248,7 @@ def main():
     # print('BOARD:', board)
     # print('CENTER:', center)
     grid = [board, center]
-    print (center)
+    print(f"Raw center coordinates from img: {center}")
 
     ## bottom left point of center square = (x, y) in pixels = (center[0], center[1])
     ## width, height = (dx, dy) in pixels = (center[2], center[3])
@@ -263,8 +263,7 @@ def main():
     dx, dy = (fucked_x - dx), (fucked_y - dy)
     center_x, center_y = pixel_space_to_robot_frame(center_sqr_bottom_left_x, center_sqr_bottom_left_y)
     ## CONVERSION FROM PIXEL SPACE TO ROBOTS FRAME WILL JUST HAPPEN ONCE IN THE BEGINGIN 
-    print(center)
-    print (center_x, center_y, dx, dy)
+    print(f"Robot coordinates: {center_x}, {center_y}, {dx}, {dy}")
     
     while True:
         
