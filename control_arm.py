@@ -137,7 +137,7 @@ def move(i, j, x, y, dx, dy):
     bot.arm.set_ee_pose_components(x=start_x, y=start_y, z=.0915+RANDOM_UPPER_OFFSET, moving_time=1)
     time.sleep(1)
 
-    center = np.array([start_x, start_y, 0.0915])
+    center = np.array([start_x, start_y, 0.07])
     # radius = 0.05
     radius = 0.025
     flag = True
@@ -255,13 +255,13 @@ def main():
     ## width, height = (dx, dy) in pixels = (center[2], center[3])
     # center = grid.findCenterRectangle(contours) 
 
-    center_sqr_bottom_left_x, center_sqr_bottom_left_y, center_sqr_bottom_left_width, center_sqr_bottom_left_height = center
+    center_sqr_top_left_x, center_sqr_top_left_y, center_sqr_top_left_width, center_sqr_top_left_height = center
 
     fucked_x, fucked_y = pixel_space_to_robot_frame(
-        center_sqr_bottom_left_x + center_sqr_bottom_left_width,
-        center_sqr_bottom_left_y + center_sqr_bottom_left_height)
+        center_sqr_top_left_x + center_sqr_top_left_width,
+        center_sqr_top_left_y + center_sqr_top_left_height)
 
-    center_x, center_y = pixel_space_to_robot_frame(center_sqr_bottom_left_x, center_sqr_bottom_left_y)
+    center_x, center_y = pixel_space_to_robot_frame(center_sqr_top_left_x, center_sqr_top_left_y)
 
     dx, dy = (fucked_x - center_x), (fucked_y - center_y)
     ## CONVERSION FROM PIXEL SPACE TO ROBOTS FRAME WILL JUST HAPPEN ONCE IN THE BEGINGIN 

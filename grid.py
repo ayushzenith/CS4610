@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 # cap = cv2.VideoCapture('./images/testVid3.mp4')
-cap = cv2.VideoCapture(0)
+# cap = cv2.VideoCapture(0)
 
 def canny_edge_detection(frame, shapeframe):
   # Convert the frame to grayscale for edge detection
@@ -199,49 +199,49 @@ def readBoard(frame, edges, contours, grid, gameState):
 
 
 
-# Get center rectangle, outer board rectangle
-ret, frame = cap.read()
-frame = detect_board(frame)
-shapeframe = frame.copy()
-edges, contours = canny_edge_detection(frame, shapeframe)
-center = findCenterRectangle(contours)
-board = [0, 0, frame.shape[1], frame.shape[0]]
-print('BOARD:', board)
-print('CENTER:', center)
-grid = [board, center]
-print (center)
+# # Get center rectangle, outer board rectangle
+# ret, frame = cap.read()
+# frame = detect_board(frame)
+# shapeframe = frame.copy()
+# edges, contours = canny_edge_detection(frame, shapeframe)
+# center = findCenterRectangle(contours)
+# board = [0, 0, frame.shape[1], frame.shape[0]]
+# print('BOARD:', board)
+# print('CENTER:', center)
+# grid = [board, center]
+# print (center)
 
 
-while True:
-  ret, frame = cap.read()
+# while True:
+#   ret, frame = cap.read()
 
-  frame = detect_board(frame)
-  shapeframe = frame.copy()
-  cv2.imshow('frame', frame)
-  # Perform Canny edge detection on the frame
-  edges, contours = canny_edge_detection(frame, shapeframe)
+#   frame = detect_board(frame)
+#   shapeframe = frame.copy()
+#   cv2.imshow('frame', frame)
+#   # Perform Canny edge detection on the frame
+#   edges, contours = canny_edge_detection(frame, shapeframe)
 
-  # Display center box
-  # center = findCenterRectangle(contours)
-  cv2.rectangle(shapeframe, [center[0], center[1]], [center[0] + center[2], center[1] + center[3]], color=(0,0,255), thickness=3)
-  cv2.rectangle(shapeframe, [0, 0], [frame.shape[1], frame.shape[0]], color=(0,0,255), thickness=3)
-  cv2.circle(shapeframe, [center[0], center[1]], 5, color=(0,255,0), thickness=5)
+#   # Display center box
+#   # center = findCenterRectangle(contours)
+#   cv2.rectangle(shapeframe, [center[0], center[1]], [center[0] + center[2], center[1] + center[3]], color=(0,0,255), thickness=3)
+#   cv2.rectangle(shapeframe, [0, 0], [frame.shape[1], frame.shape[0]], color=(0,0,255), thickness=3)
+#   cv2.circle(shapeframe, [center[0], center[1]], 5, color=(0,255,0), thickness=5)
 
-  # Display the original frame and the edge-detected frame
-  cv2.imshow("Original", frame)
-  cv2.imshow("Edges", edges)
-  cv2.imshow("Grid", shapeframe)
+#   # Display the original frame and the edge-detected frame
+#   cv2.imshow("Original", frame)
+#   cv2.imshow("Edges", edges)
+#   cv2.imshow("Grid", shapeframe)
 
-  if cv2.waitKey(33) == ord('a'):
-    ## modified this to chars, to work with the control_arm impl! 
-    gameState = [['', '', ''],
-           ['', '', ''],
-           ['', '', '']]
-    readBoard(gameState)
-    for row in gameState:
-      print(row)
+#   if cv2.waitKey(33) == ord('a'):
+#     ## modified this to chars, to work with the control_arm impl! 
+#     gameState = [['', '', ''],
+#            ['', '', ''],
+#            ['', '', '']]
+#     readBoard(gameState)
+#     for row in gameState:
+#       print(row)
 
-  if cv2.waitKey(1) & 0xFF == ord('q'):
-    cv2.destroyAllWindows()
-    break
+#   if cv2.waitKey(1) & 0xFF == ord('q'):
+#     cv2.destroyAllWindows()
+#     break
 
