@@ -103,6 +103,7 @@ def move(i, j, x, y, dx, dy):
     (0,-1) (0,0) (0,1)
     (1,-1) (1,0) (1,1)
     """
+    print(f"Move called with i={i}, j={j}, x={x}, y={y}, dx={dx}, dy={dy}")
     i = i - 1 # convert from 0 indexed 2d arr to center indexed 2d arr
     j = j - 1
 
@@ -129,7 +130,7 @@ def move(i, j, x, y, dx, dy):
     # then displaced by dx*i, dy*j to get the center of the square to play in 
 
     start_x, start_y = (x + dx/4) + (dx*-i), (y + dy/4) + (dy*-j)
-    print(start_x, start_y)
+    print(f"start_x={start_x}, start_y={start_y}")
     ## multiply dx and dy (in reference from the center square) and multiply by some constant 
     # a little bit of clearance so it doesn't initially draw
     RANDOM_UPPER_OFFSET = 0.015
