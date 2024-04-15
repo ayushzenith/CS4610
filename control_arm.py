@@ -145,8 +145,11 @@ def move(i, j, x, y, dx, dy):
     for i in range(num_points+20): # +20 since it doesn't complete the circle at +0
         theta = 2 * np.pi * i / num_points
         x = center[0] + radius * np.cos(theta)
-        y = center[1] + radius * np.sin(theta)
-        z = center[2]
+        y = center[1] +  1.4 * radius * np.sin(theta)
+        if np.isclose(theta, np.pi):
+            z = center[2] - 0.01
+        else:
+            z = center[2]
         if (flag):
             bot.arm.set_ee_pose_components(x=x, y=y, z=z+RANDOM_UPPER_OFFSET, moving_time=1)
             flag = False
