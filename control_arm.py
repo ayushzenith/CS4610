@@ -129,8 +129,7 @@ def move(i, j, x, y, dx, dy):
     # IN ROBOTS FRAME: equivalent to center square top left (x, y) + (dx/2, dy/2) to get the middle of the center
     # then displaced by dx*i, dy*j to get the center of the square to play in 
     # both displacements are negatived due to how the robot frame coordinates increase left and top
-    # TODO: did we try - dx/2 and - dy/2
-    start_x, start_y = (x - dx) + (dx*-i), (y - dy) + (dy*-j)
+    start_x, start_y = (x - dx/2) + (dx*-i), (y - dy/2) + (dy*-j)
     print(f"start_x={start_x}, start_y={start_y}")
 
     # a little bit of clearance so it doesn't initially draw
