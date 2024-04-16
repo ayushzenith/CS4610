@@ -137,7 +137,7 @@ def move(i, j, x, y, dx, dy):
     print(f"start_x={start_x}, start_y={start_y}")
 
     # a little bit of clearance so it doesn't initially draw
-    RANDOM_UPPER_OFFSET = 0.015
+    RANDOM_UPPER_OFFSET = 0.2
     bot.arm.set_ee_pose_components(x=start_x, y=start_y, z=.1+RANDOM_UPPER_OFFSET, moving_time=1)
     time.sleep(1)
 
