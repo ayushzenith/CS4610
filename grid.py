@@ -163,12 +163,12 @@ def readBoard(frame, edges, contours, grid, gameState):
       solidity = 0
 
     if vertices >= 8 and vertices <= 10 and solidity < 0.5 and convex_hull_area > 1000 and convex_hull_area < 10000:
-      #shape = "X" + str(vertices) + " " + str(convex_hull_area) + " " + str(solidity)
       shape = "X"
-      if len(approx) > 4:
-        pos = findGridCoordinate((approx[0][0][0] + approx[4][0][0]) // 2, (approx[0][0][1] + approx[4][0][1]) // 2, grid)
-        gameState[pos[0]][pos[1]] = 'X'
-        cv2.putText(frame, shape, (approx[4][0][0], approx[4][0][1] + 5), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
+      M = cv2.moments(contour)
+      cX = int(M["m10"] / M["m00"])
+      cY = int(M["m01"] / M["m00"])
+      pos = findGridCoordinate(cX, cY, grid)
+      gameState[pos[0]][pos[1]] = 'X'
     else:
       shape = ""
 
