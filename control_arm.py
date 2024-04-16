@@ -14,8 +14,8 @@ def best_move(board):
 
     best_score = float('-inf')
     move = None
-    for i in range(3):
-        for j in range(3):
+    for i in range(2, -1, -1):
+        for j in range(2, -1, -1):
             if board[i][j] == '':
                 board[i][j] = 'O'
                 score = minimax(board, 0, False)
@@ -107,9 +107,7 @@ def move(i, j, x, y, dx, dy):
     i = i - 1 # convert from 0 indexed 2d arr to center indexed 2d arr
     j = j - 1
 
-    XYOffset = 0
-    if i < -1 or j < -1: 
-        XYOffset = 0.05
+
 
     bot = InterbotixManipulatorXS(        
         robot_model='wx250',
