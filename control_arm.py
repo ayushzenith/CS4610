@@ -126,7 +126,7 @@ def move(i, j, x, y, dx, dy):
     y <---
     """
     # the center of the circle the robot will be drawing
-    # IN ROBOTS FRAME: equivalent to center square top left (x, y) + (dx/2, dy/2) to get the middle of the center
+    # IN ROBOTS FRAME: equivalent to center square top left (x, y) - (dx/2, dy/2) to get the middle of the center
     # then displaced by dx*i, dy*j to get the center of the square to play in 
     # both displacements are negatived due to how the robot frame coordinates increase left and top
     start_x, start_y = (x - dx/2) + (dx*-i), (y - dy/2) + (dy*-j)
@@ -269,7 +269,7 @@ def main():
     dx, dy = (center_x - bottom_right_x), (center_y - bottom_right_y)
     ## CONVERSION FROM PIXEL SPACE TO ROBOTS FRAME WILL JUST HAPPEN ONCE IN THE BEGINGIN 
     print(f"Robot coordinates: {center_x}, {center_y}, {dx}, {dy}")
-    
+
     while True:
         
         ret, frame = cap.read()
@@ -290,6 +290,17 @@ def main():
                 print(row)
 
         elif pressed_key & 0xFF == ord('m'):
+            winner = check_winner(gameboard)
+            if winner != "":
+                print("Game ended!")
+                if winner is None:
+                    print("Tie!")
+                else:
+                    print(f"Winner is {winner}")
+
+                cv2.destroyAllWindows()
+                break
+
             move_coords = best_move(gameboard) # Get the best move for the robot
             if move_coords is not None:
                 gameboard[move_coords[0]][move_coords[1]] = 'O' # TODO: do we need this?
