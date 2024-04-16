@@ -279,24 +279,24 @@ def main():
         cv2.imshow('Tic Tac Toe! Enter m to move', frame)
         # Perform Canny edge detection on the frame
         edges, contours = g.canny_edge_detection(frame, shapeframe)
-        if cv2.waitKey(1) & 0xFF == ord('m'):    
+
+        pressed_key = cv2.waitKey(1)
+        # s is for scanning and updating board state, m is for actually moving
+        # the idea is that we can scan multiple times now, to redraw shapes if necessary
+        # before moving
+        if pressed_key & 0xFF == ord('s'):
             gameboard = g.readBoard(frame, edges, contours, grid, gameboard) # THIS WILL BE THE FUNCTION THAT UPDATES THE BOARD BASED ON THE CV
             print ("befor robot move")
             for row in gameboard:
                 print(row)
 
+        elif pressed_key & 0xFF == ord('m'):
             move_coords = best_move(gameboard) # Get the best move for the robot
             if move_coords is not None:
-                gameboard[move_coords[0]][move_coords[1]] = 'O' # change our internal representation
+                gameboard[move_coords[0]][move_coords[1]] = 'O' # TODO: do we need this?
                 print ("after robot move")
                 for row in gameboard:
                     print(row)
-
-                ## bottom left = 260
-                ## bottom right = 260
-                # w, h = 100
-                ## pixel to cm = 100 : 10 
-
             
                 move(move_coords[0],  # this is the row (0, 1, 2)
                      move_coords[1],  # this is the col (0, 1, 2)
