@@ -107,6 +107,10 @@ def move(i, j, x, y, dx, dy):
     i = i - 1 # convert from 0 indexed 2d arr to center indexed 2d arr
     j = j - 1
 
+    XYOffset = 0
+    if i < -1 or j < -1: 
+        XYOffset = 0.05
+
     bot = InterbotixManipulatorXS(        
         robot_model='wx250',
         group_name='arm',
@@ -134,7 +138,7 @@ def move(i, j, x, y, dx, dy):
 
     # a little bit of clearance so it doesn't initially draw
     RANDOM_UPPER_OFFSET = 0.015
-    bot.arm.set_ee_pose_components(x=start_x, y=start_y, z=.0915+RANDOM_UPPER_OFFSET, moving_time=1)
+    bot.arm.set_ee_pose_components(x=start_x, y=start_y, z=.1+RANDOM_UPPER_OFFSET, moving_time=1)
     time.sleep(1)
 
     center = np.array([start_x, start_y, 0.08])
@@ -146,10 +150,11 @@ def move(i, j, x, y, dx, dy):
         theta = 2 * np.pi * i / num_points
         x = center[0] + radius * np.cos(theta)
         y = center[1] +  1.4 * radius * np.sin(theta)
-        if np.isclose(theta, np.pi):
-            z = center[2] - 0.01
-        else:
-            z = center[2]
+        
+        # if np.isclose(theta, np.pi):
+        #     z = center[2] - 0.01
+        # else:
+        z = center[2]
         if (flag):
             bot.arm.set_ee_pose_components(x=x, y=y, z=z+RANDOM_UPPER_OFFSET, moving_time=1)
             flag = False
@@ -210,10 +215,10 @@ def pixel_space_to_robot_frame(pixel_x, pixel_y):
     best fit between (100, 15) (200, 10) to get robot_y
     """
     # REPLACE THESE VALUES FOR CALIBRATION
-    PT_1_PIXEL_X, PT_1_PIXEL_Y = 317, 169
-    PT_1_ROBOT_X, PT_1_ROBOT_Y = .5, 0
+    PT_1_PIXEL_X, PT_1_PIXEL_Y = 488, 149
+    PT_1_ROBOT_X, PT_1_ROBOT_Y = .5, -.2
 
-    PT_2_PIXEL_X, PT_2_PIXEL_Y = 144, 349
+    PT_2_PIXEL_X, PT_2_PIXEL_Y = 112, 298
     PT_2_ROBOT_X, PT_2_ROBOT_Y = .3, .2
 
     robot_x_calibration_funct = fit_linear_line((PT_1_PIXEL_Y, PT_1_ROBOT_X),
@@ -284,15 +289,15 @@ def main():
         # the idea is that we can scan multiple times now, to redraw shapes if necessary
         # before moving
         if pressed_key & 0xFF == ord('s'):
+            print(frame.shape)
             gameboard = g.readBoard(frame, edges, contours, grid, gameboard) # THIS WILL BE THE FUNCTION THAT UPDATES THE BOARD BASED ON THE CV
             print ("befor robot move")
             for row in gameboard:
                 print(row)
-
         elif pressed_key & 0xFF == ord('m'):
             move_coords = best_move(gameboard) # Get the best move for the robot
             if move_coords is not None:
-                gameboard[move_coords[0]][move_coords[1]] = 'O' # TODO: do we need this?
+                # gameboard[move_coords[0]][move_coords[1]] = 'O' 
                 print ("after robot move")
                 for row in gameboard:
                     print(row)

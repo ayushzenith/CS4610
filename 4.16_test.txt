@@ -1,0 +1,26 @@
+2
+Raw center coordinates from img: [222, 175, 130, 71]
+Robot coordinates: 0.4651006711409396, 0.08297872340425533, 0.0953020134228188, 0.13829787234042554
+Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
+after robot move
+['', '', '']
+['', '', '']
+['', '', '']
+Move called with i=0, j=0, x=0.4651006711409396, y=0.08297872340425533, dx=0.0953020134228188, dy=0.13829787234042554
+[INFO] [1713308071.978286333] [robot_manipulation]: 
+	Robot Name: wx250
+	Robot Model: wx250
+[INFO] [1713308071.978515801] [robot_manipulation]: Initialized InterbotixRobotXSCore!
+[INFO] [1713308071.983672640] [robot_manipulation]: 
+	Arm Group Name: arm
+	Moving Time: 2.00 seconds
+	Acceleration Time: 0.30 seconds
+	Drive Mode: Time-Based-Profile
+[INFO] [1713308071.983934734] [robot_manipulation]: Initialized InterbotixArmXSInterface!
+[INFO] [1713308072.488450592] [robot_manipulation]: 
+	Gripper Name: gripper
+	Gripper Pressure: 50.0%
+[INFO] [1713308072.488629391] [robot_manipulation]: Initialized InterbotixGripperXSInterface!
+start_x=0.5127516778523491, start_y=0.1521276595744681
+
+

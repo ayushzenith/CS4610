@@ -237,11 +237,10 @@ def readBoard(frame, edges, contours, grid, gameState):
 #     gameState = [['', '', ''],
 #            ['', '', ''],
 #            ['', '', '']]
-#     readBoard(gameState)
+#     readBoard(frame, edges, contours, grid,gameState)
 #     for row in gameState:
 #       print(row)
 
 #   if cv2.waitKey(1) & 0xFF == ord('q'):
 #     cv2.destroyAllWindows()
 #     break
-

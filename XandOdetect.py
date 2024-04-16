@@ -2,7 +2,9 @@ import cv2
 import numpy as np
 
 # Open the video file
-cap = cv2.VideoCapture('images/testVid3.mp4')
+# cap = cv2.VideoCapture('images/testVid3.mp4')
+
+cap = cv2.VideoCapture(0)
 
 def detect_board(frame):
     img = frame
