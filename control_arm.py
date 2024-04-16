@@ -126,12 +126,13 @@ def move(i, j, x, y, dx, dy):
     y <---
     """
     # the center of the circle the robot will be drawing
-    # IN ROBOTS FRAME: equivalent to center square bottom left (x, y) + (dx/2, dy/2) to get the middle of the center
+    # IN ROBOTS FRAME: equivalent to center square top left (x, y) + (dx/2, dy/2) to get the middle of the center
     # then displaced by dx*i, dy*j to get the center of the square to play in 
-
+    # both displacements are negatived due to how the robot frame coordinates increase left and top
+    # TODO: did we try - dx/2 and - dy/2
     start_x, start_y = (x - dx) + (dx*-i), (y - dy) + (dy*-j)
     print(f"start_x={start_x}, start_y={start_y}")
-    ## multiply dx and dy (in reference from the center square) and multiply by some constant 
+
     # a little bit of clearance so it doesn't initially draw
     RANDOM_UPPER_OFFSET = 0.015
     bot.arm.set_ee_pose_components(x=start_x, y=start_y, z=.0915+RANDOM_UPPER_OFFSET, moving_time=1)
