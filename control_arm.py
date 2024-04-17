@@ -8,6 +8,9 @@ import grid as g
 
 cap = cv2.VideoCapture(0)
 
+import numpy as np
+
+
 def best_move(board):
     if board is None:
         return None  # or handle this case appropriately
@@ -15,10 +18,10 @@ def best_move(board):
     best_score = float('-inf')
     move = None
     for i in range(2, -1,-1):
-        for j in range(2, -1,-1):
+        for j in range(3):
             if board[i][j] == '':
-                board[i][j] = 'O'
-                score = minimax(board, 0, False)
+                board[i][j] = 'X'
+                score = minimax(board, 0, True)
                 board[i][j] = ''
                 # if this score is better than the current best score, update best score and move
                 if score > best_score:
@@ -27,37 +30,36 @@ def best_move(board):
 
     return move # returns the best move for the robot in the form of (row, col)
 
-
 def minimax(board, depth, is_maximizing):
     winner = check_winner(board)
-    if winner == 'O':
-        return 1
-    elif winner == 'X':
-        return -1
-    elif winner == None: # tie !
+    if winner == 'X':
+        return 10 - depth
+    elif winner == 'O':
+        return depth - 10
+    elif winner is None:  # Tie
         return 0
-    
-    if is_maximizing:
+
+    if is_maximizing:  # 'X'
         best_score = float('-inf')
-        for i in range(2, -1,-1):
-            for j in range(2, -1,-1):
+        for i in range(3):
+            for j in range(3):
                 if board[i][j] == '':
-                    board[i][j] = 'O'
-                    # move(i, j)
-                    score = minimax(board, depth + 1, False)
+                    board[i][j] = 'X'
+                    score = minimax(board, depth + 1, False)  # Switch to minimize for 'O'
                     board[i][j] = ''
                     best_score = max(score, best_score)
         return best_score
-    else:
+    else:  # 'O'
         best_score = float('inf')
         for i in range(3):
-            for j in range(2, -1,-1):
+            for j in range(3):
                 if board[i][j] == '':
-                    board[i][j] = 'X'
-                    score = minimax(board, depth + 1, True)
+                    board[i][j] = 'O'
+                    score = minimax(board, depth + 1, True)  # Switch to maximize for 'X'
                     board[i][j] = ''
                     best_score = min(score, best_score)
         return best_score
+
 
 
 def check_winner(board):
@@ -88,7 +90,6 @@ def check_winner(board):
 
     # else, tie ! 
     return None
-
 
 
 '''
@@ -131,42 +132,69 @@ def move(i, j, x, y, dx, dy):
     # IN ROBOTS FRAME: equivalent to center square top left (x, y) - (dx/2, dy/2) to get the middle of the center
     # then displaced by dx*i, dy*j to get the center of the square to play in 
     # both displacements are negatived due to how the robot frame coordinates increase left and top
-    start_x, start_y = (x - dx/2) + (dx*-i), (y - dy/2) + (dy*-j)
+    start_x, start_y = (x - dx/2) + (dx*-i), (y - dy/4) + (dy*-j) # TOOD div by 2
     print(f"start_x={start_x}, start_y={start_y}")
 
     # a little bit of clearance so it doesn't initially draw
-    RANDOM_UPPER_OFFSET = 0.015
-    bot.arm.set_ee_pose_components(x=start_x, y=start_y, z=.1+RANDOM_UPPER_OFFSET, moving_time=1)
+    RANDOM_UPPER_OFFSET = 0.025
+    bot.arm.set_ee_pose_components(x=start_x, y=start_y, z=.0915+RANDOM_UPPER_OFFSET, moving_time=1)
     time.sleep(1)
 
-    center = np.array([start_x, start_y, 0.08])
+    center = np.array([start_x, start_y, 0.1])
     # radius = 0.05
-    radius = 0.025
+    radius = 0.02
     flag = True
-    num_points = 300
-    for i in range(num_points+20): # +20 since it doesn't complete the circle at +0
-        theta = 2 * np.pi * i / num_points
-        x = center[0] + radius * np.cos(theta)
-        y = center[1] +  1.1 * radius * np.sin(theta)
-        
-        # if np.isclose(theta, np.pi):
-        #     z = center[2] - 0.01
-        # else:
-        z = center[2]
-        if (flag):
-            bot.arm.set_ee_pose_components(x=x, y=y, z=z+RANDOM_UPPER_OFFSET, moving_time=1)
-            flag = False
-        if (bot.arm.set_ee_pose_components(x=x, y=y, z=z, moving_time=0.05) == False):
-            print("Failed to move to position")
-            break
-    time.sleep(1)
-    if (bot.arm.set_ee_pose_components(x=x, y=y, z=z, moving_time=0.05) == False):
-            print("Failed to move to position")
-            break    
+
+    bot.arm.set_ee_pose_components(x=start_x, y = start_y,  z=0.2, moving_time=2)
+    bot.arm.set_ee_pose_components(x=start_x, y = start_y,  z=0.09, moving_time=2)
+    bot.arm.set_ee_pose_components(x=start_x, y = start_y,  z=0.2, moving_time=2)
+
+
+    # for i in range(num_points+20): # +20 since it doesn't complete the circle at +0
+    #     theta = 2 * np.pi * i / num_points
+    #     x = center[0] + radius * np.cos(theta)
+    #     y = center[1] + radius * np.sin(theta)
+    #     z = center[2]
+    #     if (flag):
+    #         bot.arm.set_ee_pose_components(x=x, y=y, z=z+RANDOM_UPPER_OFFSET, moving_time=1)
+    #         flag = False
+    #     bot.arm.set_ee_pose_components(x=x, y=y, z=z, moving_time=0.05)
+    
     
     bot.arm.go_to_home_pose()
     bot.arm.go_to_sleep_pose()
     bot.shutdown()
+
+
+    
+    # center = np.array([start_x, start_y, 0.1])
+    # # radius = 0.05
+    # radius = 0.025
+    # flag = True
+    # num_points = 300
+    # for i in range(num_points+20): # +20 since it doesn't complete the circle at +0
+    #     theta = 2 * np.pi * i / num_points
+    #     x = center[0] + radius * np.cos(theta)
+    #     y = center[1] + radius * np.sin(theta)
+        
+    #     # if np.isclose(theta, np.pi):
+    #     #     z = center[2] - 0.01
+    #     # else:
+    #     z = center[2] - 0.02
+    #     if (flag):
+    #         bot.arm.set_ee_pose_components(x=x, y=y, z=z+RANDOM_UPPER_OFFSET, moving_time=1)
+    #         flag = False
+    #     if (bot.arm.set_ee_pose_components(x=x, y=y, z=z, moving_time=0.05) == False):
+    #         print("Failed to move to position")
+    #         break
+    # time.sleep(1)
+    # if (bot.arm.set_ee_pose_components(x=x, y=y, z=z+0.1, moving_time=2) == False):
+    #         print("Failed to move to position")
+                
+    
+    # bot.arm.go_to_home_pose()
+    # bot.arm.go_to_sleep_pose()
+    # bot.shutdown()
 
 
 # returns a lambda
@@ -216,10 +244,10 @@ def pixel_space_to_robot_frame(pixel_x, pixel_y):
     best fit between (100, 15) (200, 10) to get robot_y
     """
     # REPLACE THESE VALUES FOR CALIBRATION
-    PT_1_PIXEL_X, PT_1_PIXEL_Y = 469, 103
+    PT_1_PIXEL_X, PT_1_PIXEL_Y = 427, 123
     PT_1_ROBOT_X, PT_1_ROBOT_Y = .5, -.2
 
-    PT_2_PIXEL_X, PT_2_PIXEL_Y = 92, 251
+    PT_2_PIXEL_X, PT_2_PIXEL_Y = 87, 326
     PT_2_ROBOT_X, PT_2_ROBOT_Y = .3, .2
 
     robot_x_calibration_funct = fit_linear_line((PT_1_PIXEL_Y, PT_1_ROBOT_X),
@@ -279,7 +307,7 @@ def main():
     while True:
         
         ret, frame = cap.read()
-        frame = g.detect_board(frame)
+        # frame = g.detect_board(frame)
         shapeframe = frame.copy()
         cv2.imshow('Tic Tac Toe! Enter m to move', frame)
         # Perform Canny edge detection on the frame
@@ -308,7 +336,7 @@ def main():
 
             move_coords = best_move(gameboard) # Get the best move for the robot
             if move_coords is not None:
-                gameboard[move_coords[0]][move_coords[1]] = 'O' 
+                gameboard[move_coords[0]][move_coords[1]] = 'X' 
                 print ("after robot move")
                 for row in gameboard:
                     print(row)
