@@ -50,11 +50,11 @@ def main():
     # 117, 200
     # makes dots on the board to calibrate the pixel space to robot frame space
     # uses linear transforamtion to convert 
-    new_x, new_y = ca.pixel_space_to_robot_frame(284, 205)  
-    print(new_x, new_y)  
-    bot.arm.set_ee_pose_components(x=new_x, y=new_y, z=0.2, moving_time=2)
-    bot.arm.set_ee_pose_components(x=new_x, y=new_y, z=0.07, moving_time=2)
-    bot.arm.set_ee_pose_components(x=new_x, y=new_y, z=0.2, moving_time=2)
+    # new_x, new_y = ca.pixel_space_to_robot_frame(229, 137)  
+    # print(new_x, new_y)  
+    # bot.arm.set_ee_pose_components(x=new_x, y=new_y, z=0.2, moving_time=2)
+    # bot.arm.set_ee_pose_components(x=new_x, y=new_y, z=0.07, moving_time=2)
+    # bot.arm.set_ee_pose_components(x=new_x, y=new_y, z=0.2, moving_time=2)
 
     bot.arm.set_ee_pose_components(x=0.5, y = -0.2, z=0.2, moving_time=2)
     bot.arm.set_ee_pose_components(x=0.5, y = -0.2,  z=0.09, moving_time=2)
@@ -65,9 +65,9 @@ def main():
     bot.arm.set_ee_pose_components(x=0.3, y = 0.2, z=0.2, moving_time=2)
     # bot.arm.go_to_home_pose()
 
-    # bot.arm.set_ee_pose_components(x=0.4, y=-0.1, z=0.2, moving_time=2)
-    # bot.arm.set_ee_pose_components(x=0.4, y=-0.1, z=0.07, moving_time=2)
-    # bot.arm.set_ee_pose_components(x=0.4, y=-0.1, z=0.2, moving_time=2)
+    # bot.arm.set_ee_pose_components(x=0.478, y=0.119, z=0.2, moving_time=2)
+    # bot.arm.set_ee_pose_components(x=0.478, y=0.119, z=0.07, moving_time=2)
+    # bot.arm.set_ee_pose_components(x=0.478, y=0.119, z=0.2, moving_time=2)
 
     # bot.arm.set_ee_pose_components(x=0.25, y = 0.1, z=0.2, moving_time=2)
     # bot.arm.set_ee_pose_components(x=0.25, y = 0.1, z=0.07, moving_time=2)

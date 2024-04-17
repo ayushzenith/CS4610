@@ -14,8 +14,8 @@ def best_move(board):
 
     best_score = float('-inf')
     move = None
-    for i in range(2, -1, -1):
-        for j in range(2, -1, -1):
+    for i in range(2, -1,-1):
+        for j in range(2, -1,-1):
             if board[i][j] == '':
                 board[i][j] = 'O'
                 score = minimax(board, 0, False)
@@ -39,8 +39,8 @@ def minimax(board, depth, is_maximizing):
     
     if is_maximizing:
         best_score = float('-inf')
-        for i in range(2, -1, -1):
-            for j in range(2, -1, -1):
+        for i in range(2, -1,-1):
+            for j in range(2, -1,-1):
                 if board[i][j] == '':
                     board[i][j] = 'O'
                     # move(i, j)
@@ -50,8 +50,8 @@ def minimax(board, depth, is_maximizing):
         return best_score
     else:
         best_score = float('inf')
-        for i in range(2, -1, -1):
-            for j in range(2, -1, -1):
+        for i in range(3):
+            for j in range(2, -1,-1):
                 if board[i][j] == '':
                     board[i][j] = 'X'
                     score = minimax(board, depth + 1, True)
@@ -135,7 +135,7 @@ def move(i, j, x, y, dx, dy):
     print(f"start_x={start_x}, start_y={start_y}")
 
     # a little bit of clearance so it doesn't initially draw
-    RANDOM_UPPER_OFFSET = 0.2
+    RANDOM_UPPER_OFFSET = 0.015
     bot.arm.set_ee_pose_components(x=start_x, y=start_y, z=.1+RANDOM_UPPER_OFFSET, moving_time=1)
     time.sleep(1)
 
@@ -147,7 +147,7 @@ def move(i, j, x, y, dx, dy):
     for i in range(num_points+20): # +20 since it doesn't complete the circle at +0
         theta = 2 * np.pi * i / num_points
         x = center[0] + radius * np.cos(theta)
-        y = center[1] +  1.4 * radius * np.sin(theta)
+        y = center[1] +  1.1 * radius * np.sin(theta)
         
         # if np.isclose(theta, np.pi):
         #     z = center[2] - 0.01
@@ -156,10 +156,13 @@ def move(i, j, x, y, dx, dy):
         if (flag):
             bot.arm.set_ee_pose_components(x=x, y=y, z=z+RANDOM_UPPER_OFFSET, moving_time=1)
             flag = False
-        bot.arm.set_ee_pose_components(x=x, y=y, z=z, moving_time=0.05)
-
-    bot.arm.set_ee_pose_components(x=x, y=y, z=z+0.01, moving_time=2)  
-    
+        if (bot.arm.set_ee_pose_components(x=x, y=y, z=z, moving_time=0.05) == False):
+            print("Failed to move to position")
+            break
+    time.sleep(1)
+    if (bot.arm.set_ee_pose_components(x=x, y=y, z=z, moving_time=0.05) == False):
+            print("Failed to move to position")
+            break    
     
     bot.arm.go_to_home_pose()
     bot.arm.go_to_sleep_pose()
@@ -213,10 +216,10 @@ def pixel_space_to_robot_frame(pixel_x, pixel_y):
     best fit between (100, 15) (200, 10) to get robot_y
     """
     # REPLACE THESE VALUES FOR CALIBRATION
-    PT_1_PIXEL_X, PT_1_PIXEL_Y = 516, 118
+    PT_1_PIXEL_X, PT_1_PIXEL_Y = 469, 103
     PT_1_ROBOT_X, PT_1_ROBOT_Y = .5, -.2
 
-    PT_2_PIXEL_X, PT_2_PIXEL_Y = 157, 304
+    PT_2_PIXEL_X, PT_2_PIXEL_Y = 92, 251
     PT_2_ROBOT_X, PT_2_ROBOT_Y = .3, .2
 
     robot_x_calibration_funct = fit_linear_line((PT_1_PIXEL_Y, PT_1_ROBOT_X),

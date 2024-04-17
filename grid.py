@@ -39,7 +39,7 @@ def detect_board(frame):
   gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
   # threshold
-  thresh = cv2.threshold(gray, 50, 255, cv2.THRESH_BINARY)[1]
+  thresh = cv2.threshold(gray, 20, 255, cv2.THRESH_BINARY)[1]
 
     # apply morphology
   kernel = np.ones((7, 7), np.uint8)
@@ -162,14 +162,13 @@ def readBoard(frame, edges, contours, grid, gameState):
       solidity = contour_area / convex_hull_area
     except ZeroDivisionError:
       solidity = 0
-
-    if vertices >= 7 and vertices <= 16 and solidity < 0.3 and convex_hull_area > 500 and convex_hull_area < 30000:
+    if vertices >= 8 and vertices <= 10 and solidity < 0.5 and convex_hull_area > 1000 and convex_hull_area < 10000:
+      #shape = "X" + str(vertices) + " " + str(convex_hull_area) + " " + str(solidity)
       shape = "X"
-      M = cv2.moments(contour)
-      cX = int(M["m10"] / M["m00"])
-      cY = int(M["m01"] / M["m00"])
-      pos = findGridCoordinate(cX, cY, grid)
-      gameState[pos[0]][pos[1]] = 'X'
+      if len(approx) > 4:
+        pos = findGridCoordinate((approx[0][0][0] + approx[4][0][0]) // 2, (approx[0][0][1] + approx[4][0][1]) // 2, grid)
+        gameState[pos[0]][pos[1]] = 'X'
+        cv2.putText(frame, shape, (approx[4][0][0], approx[4][0][1] + 5), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
     else:
       shape = ""
 
@@ -188,6 +187,32 @@ def readBoard(frame, edges, contours, grid, gameState):
       pos = findGridCoordinate(i[0], i[1], grid)
       cv2.putText(frame, f"O {pos}", (i[0], i[1] + 5), cv2.FONT_HERSHEY_SIMPLEX, 1,(0, 0, 0), 2)
       gameState[pos[0]][pos[1]] = 'O'
+
+  #   if vertices >= 7 and vertices <= 16 and solidity < 0.3 and convex_hull_area > 500 and convex_hull_area < 30000:
+  #     shape = "X"
+  #     M = cv2.moments(contour)
+  #     cX = int(M["m10"] / M["m00"])
+  #     cY = int(M["m01"] / M["m00"])
+  #     pos = findGridCoordinate(cX, cY, grid)
+  #     gameState[pos[0]][pos[1]] = 'X'
+  #   else:
+  #     shape = ""
+
+  #   cv2.drawContours(frame, [approx], 0, (0, 255, 0), 2)
+  #   cv2.putText(frame, shape, (approx[0][0][0], approx[0][0][1] + 5), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
+  #   # print(approx)
+  
+  # # If circles are detected
+  # if circles is not None:
+  #   circles = np.uint16(np.around(circles))
+  #   for i in circles[0, :]:
+  #     # Draw the outer circle
+  #     cv2.circle(frame, (i[0], i[1]), i[2], (0, 255, 0), 2)
+  #     # Draw the center of the circle
+  #     cv2.circle(frame, (i[0], i[1]), 2, (0, 0, 255), 3)
+  #     pos = findGridCoordinate(i[0], i[1], grid)
+  #     cv2.putText(frame, f"O {pos}", (i[0], i[1] + 5), cv2.FONT_HERSHEY_SIMPLEX, 1,(0, 0, 0), 2)
+  #     gameState[pos[0]][pos[1]] = 'O'
 
   return gameState
   # Display the frame with the drawn circles
