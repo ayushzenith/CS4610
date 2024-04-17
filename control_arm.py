@@ -39,8 +39,8 @@ def minimax(board, depth, is_maximizing):
     
     if is_maximizing:
         best_score = float('-inf')
-        for i in range(3):
-            for j in range(3):
+        for i in range(2, -1, -1):
+            for j in range(2, -1, -1):
                 if board[i][j] == '':
                     board[i][j] = 'O'
                     # move(i, j)
@@ -50,8 +50,8 @@ def minimax(board, depth, is_maximizing):
         return best_score
     else:
         best_score = float('inf')
-        for i in range(3):
-            for j in range(3):
+        for i in range(2, -1, -1):
+            for j in range(2, -1, -1):
                 if board[i][j] == '':
                     board[i][j] = 'X'
                     score = minimax(board, depth + 1, True)
@@ -213,10 +213,10 @@ def pixel_space_to_robot_frame(pixel_x, pixel_y):
     best fit between (100, 15) (200, 10) to get robot_y
     """
     # REPLACE THESE VALUES FOR CALIBRATION
-    PT_1_PIXEL_X, PT_1_PIXEL_Y = 488, 149
+    PT_1_PIXEL_X, PT_1_PIXEL_Y = 516, 118
     PT_1_ROBOT_X, PT_1_ROBOT_Y = .5, -.2
 
-    PT_2_PIXEL_X, PT_2_PIXEL_Y = 112, 298
+    PT_2_PIXEL_X, PT_2_PIXEL_Y = 157, 304
     PT_2_ROBOT_X, PT_2_ROBOT_Y = .3, .2
 
     robot_x_calibration_funct = fit_linear_line((PT_1_PIXEL_Y, PT_1_ROBOT_X),
@@ -287,7 +287,6 @@ def main():
         # the idea is that we can scan multiple times now, to redraw shapes if necessary
         # before moving
         if pressed_key & 0xFF == ord('s'):
-            print(frame.shape)
             gameboard = g.readBoard(frame, edges, contours, grid, gameboard) # THIS WILL BE THE FUNCTION THAT UPDATES THE BOARD BASED ON THE CV
             print ("befor robot move")
             for row in gameboard:
@@ -306,7 +305,7 @@ def main():
 
             move_coords = best_move(gameboard) # Get the best move for the robot
             if move_coords is not None:
-                # gameboard[move_coords[0]][move_coords[1]] = 'O' 
+                gameboard[move_coords[0]][move_coords[1]] = 'O' 
                 print ("after robot move")
                 for row in gameboard:
                     print(row)

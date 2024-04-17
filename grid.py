@@ -8,7 +8,7 @@ def canny_edge_detection(frame, shapeframe):
   # Convert the frame to grayscale for edge detection
   gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
   # Apply Gaussian blur to reduce noise and smoothen edges
-  blurred = cv2.GaussianBlur(src=gray, ksize=(5, 5), sigmaX=0.5)
+  blurred = cv2.GaussianBlur(src=gray, ksize=(9, 9), sigmaX=0.5)
 
   # Perform Canny edge detection
   edges = cv2.Canny(blurred, 70, 135)
@@ -73,6 +73,7 @@ def detect_board(frame):
   result2 = result1[y:y + h, x:x + w]
 
   return result2
+
 
 
 def findCenterRectangle(contours):
@@ -143,7 +144,7 @@ def readBoard(frame, edges, contours, grid, gameState):
   gray = cv2.medianBlur(gray, 5)
   rows = gray.shape[0]
 
-  circles = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, 1, rows / 8,param1=100, param2=30,minRadius=1, maxRadius=100)
+  circles = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, 1, rows / 8,param1=200, param2=35,minRadius=5, maxRadius=75)
   contours, _ = cv2.findContours(edges.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
   for contour in contours:
@@ -162,7 +163,7 @@ def readBoard(frame, edges, contours, grid, gameState):
     except ZeroDivisionError:
       solidity = 0
 
-    if vertices >= 8 and vertices <= 10 and solidity < 0.5 and convex_hull_area > 1000 and convex_hull_area < 10000:
+    if vertices >= 7 and vertices <= 16 and solidity < 0.3 and convex_hull_area > 500 and convex_hull_area < 30000:
       shape = "X"
       M = cv2.moments(contour)
       cX = int(M["m10"] / M["m00"])
